@@ -5,8 +5,8 @@
 
 pkgbase=catalyst-utils
 pkgname=('catalyst-utils' 'opencl-catalyst' 'mhwd-catalyst')
-pkgver=15.201.1151
-pkgrel=12
+pkgver=15.302.2301
+pkgrel=18
 epoch=1
 _execlineorig="Exec=amdxdg-su -c amdcccle"
 _execlinenew="Exec=xdg-su amdcccle"
@@ -15,7 +15,11 @@ arch=('i686' 'x86_64')
 url="http://www.amd.com"
 license=('custom')
 source=("https://www2.ati.com/drivers/linux/amd-catalyst-15.9-linux-installer-15.201.1151-x86.x86_64.zip"
-	"https://raw.githubusercontent.com/pciutils/pciids/ab8e0dc2f9bcc6d7cf49866c769175cf0e119dd2/pci.ids"
+        "https://www2.ati.com/drivers/firepro/15.302.2301-linux-retail_end_user.zip"
+        "http://techeng.amd.com/1417/15.201.1701-150915a-294997C-AES.zip"
+       #"https://www2.ati.com/drivers/embedded/15.302.2301-160625a-311286e-aes.zip"
+       #"http:s//www2.ati.com/drivers/embedded/15.201-160507a-311613e-aes.zip"
+ "https://raw.githubusercontent.com/pciutils/pciids/ab8e0dc2f9bcc6d7cf49866c769175cf0e119dd2/pci.ids"
     #https://launchpad.net/ubuntu/+archive/primary/+files/fglrx-installer_${_tarball}.orig.tar.gz
     catalyst.sh
     atieventsd.sh
@@ -30,7 +34,9 @@ url_ref="http://support.amd.com/en-us/download/desktop?os=Linux+x86"
 DLAGENTS="https::/usr/bin/curl --referer ${url_ref} -o %o %u"
 
 sha256sums=('bf3e6e7d5c51db3d075410a3f116f865b82823debc1d66698d187249feec6a91'
-            'c97ea84588ed07c6fff6f66d9a4a319f3411212cab8c9e8b947110a47cced862'
+'SKIP'
+'SKIP'
+            'SKIP'
             'd5583bfb5977f73b4ca65533030f490350daca9e0ed10aefe517ffb70817531e'
             '9b347c3f518ddf12bb08a3cf09afcc3096e5dd4488e7ca3445df97b392985e8b'
             '398bade6ea2cb084043d87f6580569dd54b769055cdb518e2a074124c20f2606'
@@ -42,17 +48,10 @@ sha256sums=('bf3e6e7d5c51db3d075410a3f116f865b82823debc1d66698d187249feec6a91'
             '4f7530540f6e1ea032746e94bd164160abdf93c15509bfb8bdbecd23bcea5c47')
 
 prepare() {
-	#cd ${srcdir}/fglrx-$pkgver
-	/bin/sh ./AMD-Catalyst-15.9-Linux-installer-${pkgver}-x86.x86_64.run --extract archive_files
-	#/bin/sh ./amd-catalyst-${pkgver}-linux-x86.x86_64.run --extract archive_files
+	/bin/sh ./AMD-Catalyst-15.9-Linux-installer-15.201.1151-x86.x86_64.run --extract 15.9
+	/bin/sh ./fglrx-15.201.1701/amd-driver-installer-15.201.1701-x86.x86_64.run --extract 15.201
+	/bin/sh ./fglrx-15.302.2301/amd-driver-installer-15.302.2301-x86.x86_64.run --extract 15.302
 
-	# move files
-	#mkdir common
-	#mv etc lib usr common
-	#mkdir -p fglrx-$pkgver/archive_files
-	#mv arch common xpic xpic_64a LICENSE.TXT fglrx-$pkgver/archive_files
-	mkdir -p fglrx-$pkgver
-	mv archive_files fglrx-$pkgver
 }
 
 package_catalyst-utils() {
@@ -65,7 +64,7 @@ package_catalyst-utils() {
 	conflicts=('catalyst-legacy' 'catalyst-legacy-utils' 'catalyst-13.4' 'catalyst-13.4-utils' 'xvba-video')
 	install="${pkgname}.install"
 
-	cd fglrx-$pkgver
+	cd 15.302
 
     ## Install userspace tools and libraries
     # Create directories
@@ -94,9 +93,9 @@ package_catalyst-utils() {
 
     # X.org driver
       if [ "${CARCH}" = "i686" ]; then
-	cd "${srcdir}/fglrx-$pkgver/archive_files/xpic/usr/X11R6/lib/modules"
+	cd "${srcdir}/15.302/xpic/usr/X11R6/lib/modules"
       elif [ "${CARCH}" = "x86_64" ]; then
-	cd "${srcdir}/fglrx-$pkgver/archive_files/xpic_64a/usr/X11R6/lib64/modules"
+	cd "${srcdir}/15.302/xpic_64a/usr/X11R6/lib64/modules"
       fi
 
       install -m755 *.so "${pkgdir}/usr/lib/xorg/modules"
@@ -126,11 +125,13 @@ package_catalyst-utils() {
 
     # Controlcenter / libraries
       if [ "${CARCH}" = "i686" ]; then
-	cd "${srcdir}/fglrx-$pkgver/archive_files/arch/x86/usr"
+	cd "${srcdir}/15.302/arch/x86/usr"
 	_lib=lib
+        _amdarch=x86
       elif [ "${CARCH}" = "x86_64" ]; then
-	cd "${srcdir}/fglrx-$pkgver/archive_files/arch/x86_64/usr"
+	cd "${srcdir}/15.302/arch/x86_64/usr"
 	_lib=lib64
+        _amdarch=x86_64
       fi
 
 	# OpenGL library
@@ -158,7 +159,7 @@ package_catalyst-utils() {
 #      install -m755 -d "${pkgdir}/usr/share/ati/${_lib}"
 #      install -m755 share/ati/${_lib}/*.so* "${pkgdir}/usr/share/ati/${_lib}"
 
-    #fix AIGLX open error (laptops wake on 4.15+?)
+    # fix AIGLX open error (laptops wake on 4.15+?)
       install -m755 -d ${pkgdir}/usr/X11R6/${_lib}/modules/dri
       ln -snf /usr/lib/xorg/modules/dri/fglrx_dri.so ${pkgdir}/usr/X11R6/${_lib}/modules/dri/fglrx_dri.so
 
@@ -168,9 +169,11 @@ package_catalyst-utils() {
       ln -snf libatiuki.so.1.0 "${pkgdir}/usr/lib/libatiuki.so.1"
       ln -snf libatiuki.so.1.0 "${pkgdir}/usr/lib/libatiuki.so"
 
-      cd "${srcdir}/fglrx-$pkgver/archive_files/common"
+    # >15.9 control files lack cards - also pick up older registry but newer profiles
+      cd "${srcdir}/15.302/common"
       patch -Np2 -i "${srcdir}/arch-fglrx-authatieventsd_new.patch"
       install -m644 etc/ati/* "${pkgdir}/etc/ati"
+      install -m644 ${srcdir}/15.9/common/etc/ati/*[!gb] "${pkgdir}/etc/ati"
       chmod 755 "${pkgdir}/etc/ati/authatieventsd.sh"
 
       install -m644 etc/security/console.apps/amdcccle-su "${pkgdir}/etc/security/console.apps"
@@ -196,8 +199,8 @@ package_catalyst-utils() {
       install -m755 "${srcdir}/catalyst.sh" "${pkgdir}/etc/profile.d"
 
     # License
-      install -m644 "${srcdir}/fglrx-$pkgver/archive_files/LICENSE.TXT" "${pkgdir}/usr/share/licenses/${pkgname}"
-      install -m644 "${srcdir}/fglrx-$pkgver/archive_files/common/usr/share/doc/amdcccle/ccc_copyrights.txt" \
+      install -m644 "${srcdir}/15.302/LICENSE.TXT" "${pkgdir}/usr/share/licenses/${pkgname}"
+      install -m644 "${srcdir}/15.302/common/usr/share/doc/amdcccle/ccc_copyrights.txt" \
 	"${pkgdir}/usr/share/licenses/${pkgname}/amdcccle_copyrights.txt"
 
     #workaround for the high io bug , thanks to lano1106 for finding this ugly bug! https://bbs.archlinux.org/viewtopic.php?pid=1279977#p1279977
@@ -227,7 +230,7 @@ package_opencl-catalyst() {
       optdepends=('opencl-headers: headers necessary for OpenCL development'
                   'opencl-icd-loader: OpenCL ICD Bindings')
 
-      cd "${srcdir}/fglrx-$pkgver"
+      cd "${srcdir}/15.201"
       
       install -dm755 "${pkgdir}"/usr/{bin,lib}
       install -dm755 "${pkgdir}/etc/OpenCL/vendors"
@@ -241,14 +244,14 @@ package_opencl-catalyst() {
       _ARCHLIB="64"
       fi
       
-      cd "${srcdir}/fglrx-$pkgver/archive_files/arch/${_ARCHDIR}"
+      cd "${srcdir}/15.201/arch/${_ARCHDIR}"
       install -m755 usr/bin/clinfo "${pkgdir}/usr/bin/"
       install -m644 etc/OpenCL/vendors/amdocl*.icd "${pkgdir}/etc/OpenCL/vendors/"
       install -m755 usr/lib${_ARCHLIB}/libamdocl*.so "${pkgdir}/usr/lib/"
 #      install -m755 usr/lib${_ARCHLIB}/libOpenCL.so.1 "${pkgdir}/usr/lib/"      #opencl-icd-loader provides this
 #      ln -s libOpenCL.so.1 "${pkgdir}/usr/lib/libOpenCL.so"
       # license
-      install -m644 "${srcdir}/fglrx-$pkgver/archive_files/LICENSE.TXT" "${pkgdir}/usr/share/licenses/${pkgname}/"
+      install -m644 "${srcdir}/15.201/LICENSE.TXT" "${pkgdir}/usr/share/licenses/${pkgname}/"
 }
 
 package_mhwd-catalyst() {
@@ -261,7 +264,7 @@ package_mhwd-catalyst() {
     install -d -m755 "${pkgdir}/var/lib/mhwd/ids/pci/"
     # Generate mhwd database
     sh -e "${srcdir}/mhwd-catalyst" \
-    "${srcdir}/fglrx-$pkgver/archive_files/common/lib/modules/fglrx/build_mod/fglrxko_pci_ids.h" \
+    "${srcdir}/15.9/common/lib/modules/fglrx/build_mod/fglrxko_pci_ids.h" \
     > "${srcdir}/catalyst_support.ids"
 
     # Remove IDs from radeonSi supported generations
