@@ -1,9 +1,0 @@
-[Desktop Entry]
-Version=1.0
-Type=Application
-Name=Manjaro User Guide
-Comment=Documentation for Beginners (French)
-Exec=/usr/bin/manjaro-documentation-fr
-Icon=application-pdf
-Terminal=false
-Categories=Utility;Documentation;

@@ -1,9 +1,0 @@
-[Unit]
-Description=Check if Nvidia closed drivers are in use and in this case disable Wayland sessions
-
-[Service]
-Type=oneshot
-ExecStart=/usr/bin/check_vga_driver
-
-[Install]
-WantedBy=multi-user.target

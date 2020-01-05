@@ -1,0 +1,59 @@
+# Based on the file created for Arch Linux by:
+# Maintainer : Thomas Baechler <thomas@archlinux.org>
+
+# Maintainer: Philip Müller <philm@manjaro.org>
+# Maintainer: Roland Singer <roland@manjaro.org>
+
+_linuxprefix=linux419
+_extramodules=extramodules-4.19-MANJARO
+pkgname=$_linuxprefix-nvidia-304xx
+_pkgname=nvidia
+pkgver=304.137
+pkgrel=1
+pkgdesc="NVIDIA drivers for linux."
+arch=('i686' 'x86_64')
+url="http://www.nvidia.com/"
+depends=("$_linuxprefix" "nvidia-304xx-utils=${epoch}:${pkgver}")
+makedepends=("$_linuxprefix-headers")
+provides=("$_pkgname=$pkgver" "$_linuxprefix-nvidia-legacy")
+replaces=("$_linuxprefix-nvidia-legacy")
+groups=("$_linuxprefix-extramodules")
+conflicts=('nvidia-96xx' 'nvidia-173xx' "$_linuxprefix-nvidia")
+license=('custom')
+install=nvidia.install
+options=(!strip)
+source=('linux-4.14.patch' 'linux-4.15.patch')
+source_i686=("http://us.download.nvidia.com/XFree86/Linux-x86/${pkgver}/NVIDIA-Linux-x86-${pkgver}.run")
+source_x86_64=("http://us.download.nvidia.com/XFree86/Linux-x86_64/${pkgver}/NVIDIA-Linux-x86_64-${pkgver}-no-compat32.run")
+md5sums=('badddcff69fc8a2d5026f927b7311869'
+         '6247228c243b7be62d50bed22bc2b124')
+md5sums_i686=('133098e70581f6b81c481338cc20f100')
+md5sums_x86_64=('485506ee6a7c54780488dacddf1d56b1')
+
+[[ "$CARCH" = "i686" ]] && _pkg="NVIDIA-Linux-x86-${pkgver}"
+[[ "$CARCH" = "x86_64" ]] && _pkg="NVIDIA-Linux-x86_64-${pkgver}-no-compat32"
+
+prepare() {
+  cd "$srcdir"
+  sh "$_pkg.run" --extract-only
+  cd "${_pkg}"
+  # patches here
+
+  # Fix compile problem with 4.14
+  (cd kernel; patch -p1 --no-backup-if-mismatch -i "$srcdir"/linux-4.14.patch)
+  (cd kernel; patch -p1 --no-backup-if-mismatch -i "$srcdir"/linux-4.15.patch)
+}
+
+build() {
+    _kernver="$(cat /usr/lib/modules/${_extramodules}/version)"
+
+    cd "${_pkg}/kernel"
+    make SYSSRC=/usr/lib/modules/"${_kernver}/build" module
+}
+
+package() {
+    install -D -m644 "${srcdir}/${_pkg}/kernel/nvidia.ko" \
+        "${pkgdir}/usr/lib/modules/${_extramodules}/nvidia.ko"
+    sed -i -e "s/EXTRAMODULES='.*'/EXTRAMODULES='${_extramodules}'/" "${startdir}/nvidia.install"
+    gzip "${pkgdir}/usr/lib/modules/${_extramodules}/nvidia.ko"
+}

@@ -1,8 +1,0 @@
-post_install() {
-	echo "	==> to add your default ssh key, run:"
-	echo "	ssh-add"
-}
-
-post_upgrade() {
-	post_install "$1"
-}

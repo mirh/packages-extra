@@ -1,6 +1,3 @@
-This repo has been archived.
-Our code is now hosted at
+Manjaro legacy & special driver repo
 
-https://gitlab.manjaro.org/
-
-See you there!
+Because if open drivers set your PC on fire, that's better than spending some time fixing the blobs¿
