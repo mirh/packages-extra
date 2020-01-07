@@ -1,14 +1,12 @@
 # Maintainer: Philip Müller <philm[at]manjaro[dog]org>
 # Maintainer: Roland Singer <roland[at]manjaro[dog]org>
 
-
 _linuxprefix=linux54
 _extramodules=extramodules-5.4-MANJARO
 pkgname=$_linuxprefix-catalyst
 _pkgname=catalyst
 pkgver=15.201.1151
 pkgrel=4
-epoch=1
 _pkgver=15.201.1151
 provides=("$_pkgname=$_pkgver")
 groups=("$_linuxprefix-extramodules")
@@ -16,7 +14,7 @@ pkgdesc="AMD/ATI Catalyst drivers for linux. fglrx kernel module only."
 arch=('i686' 'x86_64')
 url="http://www.amd.com"
 license=('custom')
-depends=("$_linuxprefix" "catalyst-utils=${epoch}:${pkgver}")
+depends=("$_linuxprefix" "catalyst-utils=${pkgver}")
 makedepends=("$_linuxprefix-headers")
 conflicts=('catalyst-legacy' "$_linuxprefix-catalyst-legacy")
 install=catalyst.install

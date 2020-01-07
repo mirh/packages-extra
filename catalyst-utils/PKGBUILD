@@ -7,7 +7,6 @@ pkgbase=catalyst-utils
 pkgname=('catalyst-utils' 'opencl-catalyst' 'mhwd-catalyst')
 pkgver=15.302.2301
 pkgrel=18
-epoch=1
 _execlineorig="Exec=amdxdg-su -c amdcccle"
 _execlinenew="Exec=xdg-su amdcccle"
 pkgdesc="AMD/ATI Catalyst drivers utilities and libraries."

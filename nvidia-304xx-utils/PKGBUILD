@@ -6,7 +6,6 @@ pkgbase=nvidia-304xx-utils
 pkgname=('nvidia-304xx-utils' 'opencl-nvidia-304xx' 'mhwd-nvidia-304xx')
 pkgver=304.137
 pkgrel=7
-epoch=1
 arch=('i686' 'x86_64')
 url="http://www.nvidia.com/"
 license=('custom')
@@ -73,7 +72,7 @@ package_mhwd-nvidia-304xx() {
 
 package_nvidia-304xx-utils() {
     pkgdesc="NVIDIA drivers utilities and libraries, 304xx legacy branch"
-    depends=('xorg-server' 'libxvmc' 'mhwd' 'mesa')
+    depends=('X-ABI-VIDEODRV_VERSION<24' 'libxvmc' 'mhwd' 'mesa')
     optdepends=('gtk2: nvidia-settings'
                 'pkg-config: nvidia-xconfig'
                 'opencl-nvidia-304xx: OpenCL support')

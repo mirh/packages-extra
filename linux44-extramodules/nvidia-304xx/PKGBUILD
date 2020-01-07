@@ -10,11 +10,10 @@ pkgname=$_linuxprefix-nvidia-304xx
 _pkgname=nvidia
 pkgver=304.137
 pkgrel=44
-epoch=1
 pkgdesc="NVIDIA drivers for linux."
 arch=('i686' 'x86_64')
 url="http://www.nvidia.com/"
-depends=("$_linuxprefix" "nvidia-304xx-utils=${epoch}:${pkgver}")
+depends=("$_linuxprefix" "nvidia-304xx-utils=${pkgver}")
 makedepends=("$_linuxprefix-headers")
 provides=("$_pkgname=$pkgver" "$_linuxprefix-nvidia-legacy")
 replaces=("$_linuxprefix-nvidia-legacy")
