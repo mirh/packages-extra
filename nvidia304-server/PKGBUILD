@@ -1,0 +1,89 @@
+# Maintainer: Philip Müller <philm@manjaro.org>
+#
+
+pkgname=('nvidia304-server')
+pkgver=1.19.7
+pkgrel=1
+arch=('i686' 'x86_64')
+depends=(xorgproto
+         libxdmcp
+         libxfont
+         libpciaccess
+         libdrm
+         libxi
+         libxaw
+         libxrender
+         libxfixes
+         libgl
+         libxv
+         libxext
+         libgcrypt
+         libxau
+         pixman
+         xkeyboard-config
+         xorg-xkbcomp
+         xorg-setxkbmap
+         xorg-fonts-misc
+         udev
+         xorg-util-macros)
+provides=('x-server' 'glamor-egl' 'xf86-video-modesetting'
+          xorg-server-common=${pkgver}
+          xorg-server-devel=${pkgver}
+          xorg-server-xephyr=${pkgver}
+          xorg-server-xnest=${pkgver}
+          xorg-server-xvfb=${pkgver}
+          xorg-server-xwayland=${pkgver}
+          xorg-server=${pkgver}
+          X-ABI-VIDEODRV_VERSION=23
+          X-ABI-XINPUT_VERSION=24.1
+          X-ABI-EXTENSION_VERSION=10.0)
+conflicts=('glamor-egl' 'xf86-video-modesetting' # 'nvidia-utils<=331.20' why was this even here ?
+           xorg-server-common
+           xorg-server-devel
+           xorg-server-xephyr
+           xorg-server-xnest
+           xorg-server-xwayland
+           xorg-server-xvfb
+           xorg-server)
+groups=(xorg119)
+backup=(etc/X11/xorg.conf.d/10-evdev.conf etc/X11/xorg.conf.d/10-quirks.conf)
+pkgdesc="Xorg-Server for Nvidia304"
+url="http://manjaro.org"
+#_url="http://downloads.sourceforge.net/project/manjarodev/users/philm/xorg117/"
+license=('custom')
+source_i686=(local://xorg-server-${pkgver}-${pkgrel}-i686.pkg.tar.xz
+        local://xorg-server-common-${pkgver}-${pkgrel}-i686.pkg.tar.xz
+        local://xorg-server-devel-${pkgver}-${pkgrel}-i686.pkg.tar.xz
+        local://xorg-server-xephyr-${pkgver}-${pkgrel}-i686.pkg.tar.xz
+        local://xorg-server-xnest-${pkgver}-${pkgrel}-i686.pkg.tar.xz
+        local://xorg-server-xvfb-${pkgver}-${pkgrel}-i686.pkg.tar.xz
+        local://xorg-server-xwayland-${pkgver}-${pkgrel}-i686.pkg.tar.xz)
+source_x86_64=(local://xorg-server-${pkgver}-${pkgrel}-x86_64.pkg.tar.xz
+        local://xorg-server-common-${pkgver}-${pkgrel}-x86_64.pkg.tar.xz
+        local://xorg-server-devel-${pkgver}-${pkgrel}-x86_64.pkg.tar.xz
+        local://xorg-server-xephyr-${pkgver}-${pkgrel}-x86_64.pkg.tar.xz
+        local://xorg-server-xnest-${pkgver}-${pkgrel}-x86_64.pkg.tar.xz
+        local://xorg-server-xvfb-${pkgver}-${pkgrel}-x86_64.pkg.tar.xz
+        local://xorg-server-xwayland-${pkgver}-${pkgrel}-x86_64.pkg.tar.xz)
+sha256sums_i686=('SKIP'
+                 'SKIP'
+                 'SKIP'
+                 'SKIP'
+                 'SKIP'
+                 'SKIP'
+                 'SKIP')
+sha256sums_x86_64=('SKIP'
+                   'SKIP'
+                   'SKIP'
+                   'SKIP'
+                   'SKIP'
+                   'SKIP'
+                   'SKIP')
+# pacman bug FS#43020
+SRCDEST=~/packages
+
+package() {
+  cp -rPf usr "${pkgdir}"
+  cp -rPf etc "${pkgdir}"
+  cp -rPf var "${pkgdir}"
+}

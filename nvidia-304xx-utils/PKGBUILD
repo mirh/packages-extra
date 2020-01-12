@@ -10,10 +10,11 @@ arch=('i686' 'x86_64')
 url="http://www.nvidia.com/"
 license=('custom')
 options=('!strip')
-source=('mhwd-nvidia' 'nvidia-drm-outputclass.conf' 'nvidia-utils.sysusers')
+source=('MHWDCONFIG' 'mhwd-nvidia' 'nvidia-drm-outputclass.conf' 'nvidia-utils.sysusers')
 source_i686=("http://us.download.nvidia.com/XFree86/Linux-x86/${pkgver}/NVIDIA-Linux-x86-${pkgver}.run")
 source_x86_64=("http://us.download.nvidia.com/XFree86/Linux-x86_64/${pkgver}/NVIDIA-Linux-x86_64-${pkgver}-no-compat32.run")
-md5sums=('364555382ca8fe8b815af43d6f7e65bc'
+md5sums=('be53536f83ede476b7761b0d0ffcfdd2'
+         '364555382ca8fe8b815af43d6f7e65bc'
          '768a64259f7e8d8a46a13b876d6c443c'
          '3d2894e71d81570bd00bce416d3e547d')
 md5sums_i686=('133098e70581f6b81c481338cc20f100')
@@ -68,6 +69,9 @@ package_mhwd-nvidia-304xx() {
     ${srcdir}/${_pkg}/README.txt \
     ${srcdir}/${_pkg}/kernel/nv-kernel.o \
     > ${pkgdir}/var/lib/mhwd/ids/pci/nvidia-304xx.ids
+
+    # Add back killed off mhwd entry
+    install -D -m755 "${srcdir}"/MHWDCONFIG -t "${pkgdir}/var/lib/mhwd/db/pci/graphic_drivers/nvidia-304xx/"
 }
 
 package_nvidia-304xx-utils() {

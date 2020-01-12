@@ -1,30 +1,29 @@
-# $Id$
 # Maintainer: AndyRTR <andyrtr@archlinux.org>
 # Maintainer: Jan de Groot <jgc@archlinux.org>
 
-pkgbase=xorg-server
-pkgname=('xorg-server' 'xorg-server-xephyr' 'xorg-server-xdmx' 'xorg-server-xvfb' 'xorg-server-xnest' 'xorg-server-xwayland' 'xorg-server-common' 'xorg-server-devel')
-pkgver=1.19.6+24+g56547b196
+pkgbase=xorg-server-1.19
+pkgname=('xorg-server' 'xorg-server-xephyr' 'xorg-server-xvfb' 'xorg-server-xnest' 'xorg-server-xwayland' 'xorg-server-common' 'xorg-server-devel')
+pkgver=1.19.7
 pkgrel=1
-arch=('x86_64')
+arch=('i686' 'x86_64')
 license=('custom')
-groups=('xorg')
-url="http://xorg.freedesktop.org"
-makedepends=('pixman' 'libx11' 'mesa' 'mesa-libgl' 'xf86driproto' 'xcmiscproto' 'xtrans' 'bigreqsproto' 'randrproto' 
-             'inputproto' 'fontsproto' 'videoproto' 'presentproto' 'compositeproto' 'recordproto' 'scrnsaverproto'
-             'resourceproto' 'xineramaproto' 'libxkbfile' 'libxfont2' 'renderproto' 'libpciaccess' 'libxv'
-             'xf86dgaproto' 'libxmu' 'libxrender' 'libxi' 'dmxproto' 'libxaw' 'libdmx' 'libxtst' 'libxres'
-             'xorg-xkbcomp' 'xorg-util-macros' 'xorg-font-util' 'glproto' 'dri2proto' 'libgcrypt' 'libepoxy'
-             'xcb-util' 'xcb-util-image' 'xcb-util-renderutil' 'xcb-util-wm' 'xcb-util-keysyms' 'dri3proto'
+groups=('xorg119')
+url="https://xorg.freedesktop.org"
+makedepends=('xorgproto' 'pixman' 'libx11' 'mesa' 'mesa-libgl' 'xtrans'
+             'libxkbfile' 'libxfont2' 'libpciaccess' 'libxv' 'libxmu'
+             'libxrender' 'libxi' 'libxaw' 'libxtst' 'libxres' 'xorg-xkbcomp'
+             'xorg-util-macros' 'xorg-font-util' 'libgcrypt' 'libepoxy' 'xcb-util'
+             'xcb-util-image' 'xcb-util-renderutil' 'xcb-util-wm' 'xcb-util-keysyms'
              'libxshmfence' 'libunwind' 'systemd' 'wayland-protocols' 'git')
-_commit=56547b196660e246e37132960723819972b99c8c # branch 1.19
-#source=(https://xorg.freedesktop.org/releases/individual/xserver/${pkgbase}-${pkgver}.tar.bz2{,.sig}
-source=("git+https://anongit.freedesktop.org/git/xorg/xserver.git#commit=$_commit"
+#source=(https://xorg.freedesktop.org/releases/individual/xserver/xorg-server-${pkgver}.tar.bz2{,.sig}
+source=("git+https://anongit.freedesktop.org/git/xorg/xserver.git#tag=xorg-server-${pkgver}"
         nvidia-add-modulepath-support.patch
         xserver-autobind-hotplug.patch
-	xext-shm-downgrade-from-error-to-debug.patch
+        xext-shm-downgrade-from-error-to-debug.patch
         xvfb-run
-        xvfb-run.1)
+        xvfb-run.1
+        libglvnd-glx.patch
+        libglvnd-glamor.patch)
 validpgpkeys=('7B27A3F1A6E18CD9588B4AE8310180050905E40C'
               'C383B778255613DFDB409D91DB221A6900000011'
               'DD38563A8A8224537D1F90E45B8A2D50A0ECD0D3'
@@ -34,7 +33,9 @@ sha256sums=('SKIP'
             'fcaf536e4fc307958923b58f2baf3d3102ad694efc28506f6f95a9e64483fa57'
             'ecfd6f72bd6e9494f64d48ab4abb8c68d07ce102c90b07006b21d60f63c1cdc8'
             'ff0156309470fc1d378fd2e104338020a884295e285972cc88e250e031cc35b9'
-            '2460adccd3362fefd4cdc5f1c70f332d7b578091fb9167bf88b5f91265bbd776')
+            '2460adccd3362fefd4cdc5f1c70f332d7b578091fb9167bf88b5f91265bbd776'
+            'c213df933a66876a1eb6ff2ae30d8db682071d4f019bf3b4419bb7ad015f02a4'
+            '56f0f7190154537424864ed7c878ef86802bd93491ff86b640208246b2c48dcf')
 
 pkgver() {
   cd xserver
@@ -43,7 +44,7 @@ pkgver() {
 
 prepare() {
   cd xserver
-  #cd "${pkgbase}-${pkgver}"
+  #cd "${pkgbase}.${pkgver}"
 
   # merged upstream in trunk
   patch -Np1 -i ../nvidia-add-modulepath-support.patch
@@ -51,6 +52,10 @@ prepare() {
   patch -Np1 -i ../xserver-autobind-hotplug.patch
   # merged upstream in trunk (FS#58187)
   patch -Np1 -i ../xext-shm-downgrade-from-error-to-debug.patch
+  # Pkg-config fix backport (X.org #893)
+  patch -Np1 -i ../libglvnd-glx.patch
+  # Glamor define fix (X.org #914)
+  patch -Np1 -i ../libglvnd-glamor.patch
 
   autoreconf -vfi
 }
@@ -64,11 +69,10 @@ build() {
   export LDFLAGS=${LDFLAGS/,-z,now}
 
   cd xserver
-  #cd "${pkgbase}-${pkgver}"
+  #cd "${pkgbase}.${pkgver}"
   ./configure --prefix=/usr \
       --enable-ipv6 \
       --enable-dri \
-      --enable-dmx \
       --enable-xvfb \
       --enable-xnest \
       --enable-composite \
@@ -114,9 +118,11 @@ build() {
 package_xorg-server-common() {
   pkgdesc="Xorg server common files"
   depends=(xkeyboard-config xorg-xkbcomp xorg-setxkbmap)
+  provides=("xorg-server-common=$pkgver")
+  conflicts=('xorg-server-common')
 
   cd xserver
-  #cd "${pkgbase}-${pkgver}"
+  #cd "${pkgbase}.${pkgver}"
   install -m755 -d "${pkgdir}/usr/share/licenses/xorg-server-common"
   install -m644 COPYING "${pkgdir}/usr/share/licenses/xorg-server-common"
   
@@ -136,13 +142,13 @@ package_xorg-server() {
 
   # see xorg-server-*/hw/xfree86/common/xf86Module.h for ABI versions - we provide major numbers that drivers can depend on
   # and /usr/lib/pkgconfig/xorg-server.pc in xorg-server-devel pkg
-  provides=('X-ABI-VIDEODRV_VERSION=23' 'X-ABI-XINPUT_VERSION=24.1' 'X-ABI-EXTENSION_VERSION=10.0' 'x-server')
-  conflicts=('nvidia-utils<=331.20' 'glamor-egl' 'xf86-video-modesetting')
+  provides=('X-ABI-VIDEODRV_VERSION=23' 'X-ABI-XINPUT_VERSION=24.1' 'X-ABI-EXTENSION_VERSION=10.0' "xorg-server=$pkgver")
+  conflicts=('nvidia-utils<=331.20' 'glamor-egl' 'xf86-video-modesetting' 'xorg-server')
   replaces=('glamor-egl' 'xf86-video-modesetting')
   install=xorg-server.install
 
   cd xserver
-  #cd "${pkgbase}-${pkgver}"
+  #cd "${pkgbase}.${pkgver}"
   make DESTDIR="${pkgdir}" install
   
   # distro specific files must be installed in /usr/share/X11/xorg.conf.d
@@ -163,11 +169,13 @@ package_xorg-server() {
 
 package_xorg-server-xephyr() {
   pkgdesc="A nested X server that runs as an X application"
-  depends=(libxfont2 libgl libepoxy libunwind libsystemd libxv pixman xorg-server-common xcb-util-image
+  depends=(libxfont2 libgl libepoxy libunwind systemd-libs libxv pixman xorg-server-common xcb-util-image
            xcb-util-renderutil xcb-util-wm xcb-util-keysyms)
+  provides=("xorg-server-xephyr=$pkgver")
+  conflicts=('xorg-server-xephyr')
 
   cd xserver/hw/kdrive
-  #cd "${pkgbase}-${pkgver}/hw/kdrive"
+  #cd "${pkgbase}.${pkgver}/hw/kdrive"
   make DESTDIR="${pkgdir}" install
 
   install -m755 -d "${pkgdir}/usr/share/licenses/xorg-server-xephyr"
@@ -176,10 +184,12 @@ package_xorg-server-xephyr() {
 
 package_xorg-server-xvfb() {
   pkgdesc="Virtual framebuffer X server"
-  depends=(libxfont2 libunwind libsystemd pixman xorg-server-common xorg-xauth libgl which)
+  depends=(libxfont2 libunwind systemd-libs pixman xorg-server-common xorg-xauth libgl which)
+  provides=("xorg-server-xvfb=$pkgver")
+  conflicts=('xorg-server-xvfb')
 
   cd xserver/hw/vfb
-  #cd "${pkgbase}-${pkgver}/hw/vfb"
+  #cd "${pkgbase}.${pkgver}/hw/vfb"
   make DESTDIR="${pkgdir}" install
 
   install -m755 "${srcdir}/xvfb-run" "${pkgdir}/usr/bin/"
@@ -191,34 +201,26 @@ package_xorg-server-xvfb() {
 
 package_xorg-server-xnest() {
   pkgdesc="A nested X server that runs as an X application"
-  depends=(libxfont2 libxext libunwind pixman xorg-server-common libsystemd)
+  depends=(libxfont2 libxext libunwind pixman xorg-server-common systemd-libs)
+  provides=("xorg-server-xnest=$pkgver")
+  conflicts=('xorg-server-xnest')
 
   cd xserver/hw/xnest
-  #cd "${pkgbase}-${pkgver}/hw/xnest"
+  #cd "${pkgbase}.${pkgver}/hw/xnest"
   make DESTDIR="${pkgdir}" install
 
   install -m755 -d "${pkgdir}/usr/share/licenses/xorg-server-xnest"
   ln -sf ../xorg-server-common/COPYING "${pkgdir}/usr/share/licenses/xorg-server-xnest/COPYING"
 }
 
-package_xorg-server-xdmx() {
-  pkgdesc="Distributed Multihead X Server and utilities"
-  depends=(libxfont2 libxi libxaw libxrender libdmx libxfixes libunwind pixman xorg-server-common)
-
-  cd xserver/hw/dmx
-  #cd "${pkgbase}-${pkgver}/hw/dmx"
-  make DESTDIR="${pkgdir}" install
-
-  install -m755 -d "${pkgdir}/usr/share/licenses/xorg-server-xdmx"
-  ln -sf ../xorg-server-common/COPYING "${pkgdir}/usr/share/licenses/xorg-server-xdmx/COPYING"
-}
-
 package_xorg-server-xwayland() {
   pkgdesc="run X clients under wayland"
-  depends=(libxfont2 libepoxy libunwind libsystemd libgl pixman xorg-server-common)
+  depends=(libxfont2 libepoxy libunwind systemd-libs libgl pixman xorg-server-common)
+  provides=("xorg-server-xwayland=$pkgver")
+  conflicts=('xorg-server-xwayland')
 
   cd xserver/hw/xwayland
-  #cd "${pkgbase}-${pkgver}/hw/xwayland"
+  #cd "${pkgbase}.${pkgver}/hw/xwayland"
   make DESTDIR="${pkgdir}" install
 
   install -m755 -d "${pkgdir}/usr/share/licenses/xorg-server-xwayland"
@@ -228,15 +230,14 @@ package_xorg-server-xwayland() {
 package_xorg-server-devel() {
   pkgdesc="Development files for the X.Org X server"
   depends=(# see pkgdir/usr/lib/pkgconfig/xorg-server.pc
-           xproto randrproto renderproto xextproto inputproto kbproto 
-           fontsproto pixman videoproto xf86driproto glproto 
-           mesa dri2proto dri3proto xineramaproto libpciaccess
-           resourceproto scrnsaverproto presentproto
+           xorgproto pixman mesa libpciaccess
            # not technically required but almost every Xorg pkg needs it to build
            xorg-util-macros)
+  provides=("xorg-server-devel=$pkgver")
+  conflicts=('xorg-server-devel')
 
   cd xserver
-  #cd "${pkgbase}-${pkgver}"
+  #cd "${pkgbase}.${pkgver}"
   make DESTDIR="${pkgdir}" install
 
   rm -rf "${pkgdir}/usr/bin"

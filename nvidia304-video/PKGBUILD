@@ -1,0 +1,57 @@
+#
+# Maintainer: Philip Müller <philm@manjaro.org>
+
+pkgname=('nvidia304-video')
+pkgver=2017.12
+_fbdev=0.4.4-7
+_intel=1:2.99.917+797+g4798e18b-1
+_vesa=2.3.4-4
+pkgrel=1
+arch=('i686' 'x86_64')
+depends=(glibc
+         libxvmc
+         mesa-dri
+         pixman
+         'xcb-util>=0.3.9'
+         libxcursor
+         libxinerama
+         libxrandr
+         libxss
+         libxtst
+         'nvidia304-server<1.20.0'
+)
+provides=(xf86-video-fbdev=$_fbdev
+          xf86-video-intel=$_intel
+          xf86-video-vesa=$_vesa
+          xf86-video-intel-uxa
+          xf86-video-intel-sna)
+conflicts=(xf86-video-fbdev
+           xf86-video-intel
+           xf86-video-vesa
+           xf86-video-intel-sna
+           xf86-video-intel-uxa
+           xf86-video-i810
+           xf86-video-intel-legacy)
+replaces=(xf86-video-intel-uxa xf86-video-intel-sna)
+groups=(xorg119-drivers xorg119)
+pkgdesc="xf86-video drivers for Nvidia304"
+url="http://manjaro.org"
+_url="https://archive.org/download/archlinux_pkg_"
+license=('custom')
+source=(${_url}xf86-video-fbdev/xf86-video-fbdev-$_fbdev-$CARCH.pkg.tar.xz
+        ${_url}xf86-video-intel/xf86-video-intel-$_intel-$CARCH.pkg.tar.xz
+        ${_url}xf86-video-vesa/xf86-video-vesa-$_vesa-$CARCH.pkg.tar.xz)
+if [ "$CARCH" = "i686" ]; then
+sha256sums=('9df1a971c67586171e456c93e5a0ae4dde5699747f7f00094c094a76eaad5af6'
+            '88a371e2835045bd86cbc1700d1acd56ffd21835e323d6ec9a0fbcf06931dde7'
+            'acd2b2302373ab2a4cc6e177f8ed1ba688ef0c9277914122de15d450a07789a0')
+else
+sha256sums=('fe9bf39757e5c2f2c54e26fdb04b5a5bd90b0fc57ee42565362a658f553db02d'
+            '10b58c85527748c737e422f2aff4b2d18b4005dfa165f7bfaf5c98299e8a7f18'
+            'eeb38be1d980e49f57c9e8a12a3081f907b4df77281b0bdd1a22c8a45fa8f022')
+fi
+
+package() {
+  cp -rPf usr "${pkgdir}"
+}
+
