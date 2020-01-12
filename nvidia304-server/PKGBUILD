@@ -79,8 +79,6 @@ sha256sums_x86_64=('SKIP'
                    'SKIP'
                    'SKIP'
                    'SKIP')
-# pacman bug FS#43020
-SRCDEST=~/packages
 
 package() {
   cp -rPf usr "${pkgdir}"

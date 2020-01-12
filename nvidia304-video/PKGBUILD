@@ -1,11 +1,14 @@
 #
-# Maintainer: Philip Müller <philm@manjaro.org>
+# Maintainer: Philip M?ller <philm@manjaro.org>
 
 pkgname=('nvidia304-video')
 pkgver=2017.12
 _fbdev=0.4.4-7
 _intel=1:2.99.917+797+g4798e18b-1
 _vesa=2.3.4-4
+_ati=1:7.10.0-1
+_amdgpu=1.4.0-1
+_nouveau=1.0.15-2
 pkgrel=1
 arch=('i686' 'x86_64')
 depends=(glibc
@@ -20,12 +23,18 @@ depends=(glibc
          libxtst
          'nvidia304-server<1.20.0'
 )
-provides=(xf86-video-fbdev=$_fbdev
+provides=(xf86-video-ati=$_ati
+          xf86-video-amdgpu=$_amdgpu
+          xf86-video-nouveau=$_nouveau
+          xf86-video-fbdev=$_fbdev
           xf86-video-intel=$_intel
           xf86-video-vesa=$_vesa
           xf86-video-intel-uxa
           xf86-video-intel-sna)
-conflicts=(xf86-video-fbdev
+conflicts=(xf86-video-ati
+           xf86-video-amdgpu
+           xf86-video-nouveau
+           xf86-video-fbdev
            xf86-video-intel
            xf86-video-vesa
            xf86-video-intel-sna
@@ -38,15 +47,24 @@ pkgdesc="xf86-video drivers for Nvidia304"
 url="http://manjaro.org"
 _url="https://archive.org/download/archlinux_pkg_"
 license=('custom')
-source=(${_url}xf86-video-fbdev/xf86-video-fbdev-$_fbdev-$CARCH.pkg.tar.xz
+source=(${_url}xf86-video-ati/xf86-video-ati-$_ati-$CARCH.pkg.tar.xz
+        ${_url}xf86-video-amdgpu/xf86-video-amdgpu-$_amdgpu-$CARCH.pkg.tar.xz
+        ${_url}xf86-video-nouveau/xf86-video-nouveau-$_nouveau-$CARCH.pkg.tar.xz
+        ${_url}xf86-video-fbdev/xf86-video-fbdev-$_fbdev-$CARCH.pkg.tar.xz
         ${_url}xf86-video-intel/xf86-video-intel-$_intel-$CARCH.pkg.tar.xz
         ${_url}xf86-video-vesa/xf86-video-vesa-$_vesa-$CARCH.pkg.tar.xz)
 if [ "$CARCH" = "i686" ]; then
-sha256sums=('9df1a971c67586171e456c93e5a0ae4dde5699747f7f00094c094a76eaad5af6'
+sha256sums=('069577627fe7acc2ae69434d5a99a0409c6f950790695302c70ef3250a573510'
+            'ea348f33d602c75773af47bd2ec994b8a91d67fe8b96f76c24fd488a59d84f99'
+            '760793c467231be61ce9442b98e9dbadd9d7545b6b843cfebf62c45a7f6f301e'
+            '9df1a971c67586171e456c93e5a0ae4dde5699747f7f00094c094a76eaad5af6'
             '88a371e2835045bd86cbc1700d1acd56ffd21835e323d6ec9a0fbcf06931dde7'
             'acd2b2302373ab2a4cc6e177f8ed1ba688ef0c9277914122de15d450a07789a0')
 else
-sha256sums=('fe9bf39757e5c2f2c54e26fdb04b5a5bd90b0fc57ee42565362a658f553db02d'
+sha256sums=('c38ebc327fc4d789420549ca004bd665407763717a33f6001d38fadda1481042'
+            '7b19893d75fd43b26a10b04c859508dfbf502f0cc1d7439db3ef90c40f1d040d'
+            '1b07c1f4cca0f0d1fba4b717737b8420f90fe9b2920b6bcdb7d1d40f1c0fdb43'
+            'fe9bf39757e5c2f2c54e26fdb04b5a5bd90b0fc57ee42565362a658f553db02d'
             '10b58c85527748c737e422f2aff4b2d18b4005dfa165f7bfaf5c98299e8a7f18'
             'eeb38be1d980e49f57c9e8a12a3081f907b4df77281b0bdd1a22c8a45fa8f022')
 fi

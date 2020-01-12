@@ -13,7 +13,7 @@ options=('!strip')
 source=('MHWDCONFIG' 'mhwd-nvidia' 'nvidia-drm-outputclass.conf' 'nvidia-utils.sysusers')
 source_i686=("http://us.download.nvidia.com/XFree86/Linux-x86/${pkgver}/NVIDIA-Linux-x86-${pkgver}.run")
 source_x86_64=("http://us.download.nvidia.com/XFree86/Linux-x86_64/${pkgver}/NVIDIA-Linux-x86_64-${pkgver}-no-compat32.run")
-md5sums=('be53536f83ede476b7761b0d0ffcfdd2'
+md5sums=('d41d8cd98f00b204e9800998ecf8427e'
          '364555382ca8fe8b815af43d6f7e65bc'
          '768a64259f7e8d8a46a13b876d6c443c'
          '3d2894e71d81570bd00bce416d3e547d')
@@ -94,15 +94,26 @@ package_nvidia-304xx-utils() {
     install -D -m755 "libglx.so.${pkgver}" "${pkgdir}/usr/lib/nvidia/xorg/libglx.so.${pkgver}"
     ln -s "libglx.so.${pkgver}" "${pkgdir}/usr/lib/nvidia/xorg/libglx.so.1"	# X doesn't find glx otherwise
     ln -s "libglx.so.${pkgver}" "${pkgdir}/usr/lib/nvidia/xorg/libglx.so"	# X doesn't find glx otherwise
-    #ln -s "nvidia/xorg/libglx.so.${pkgver}" "${pkgdir}/usr/lib/libGLX_indirect.so.0"
 
     # OpenGL library
     install -D -m755 "libGL.so.${pkgver}" "${pkgdir}/usr/lib/nvidia/libGL.so.${pkgver}"
 
-    # We have to provide symlinks to mesa, as nvidia 304xx doesn't ship them
-    ln -s /usr/lib/libEGL.so.1.0.0 "${pkgdir}/usr/lib/nvidia/libEGL.so.1.0.0"
-    ln -s /usr/lib/libGLESv1_CM.so.1.0.0 "${pkgdir}/usr/lib/nvidia/libGLESv1_CM.so.1.0.0"
-    ln -s /usr/lib/libGLESv2.so.2.0.0 "${pkgdir}/usr/lib/nvidia/libGLESv2.so.2.0.0"
+    # Nvidia 304xx used to require additional symlinks to work with some applications (FS#39243)
+    # Since mesa-libgl was dropped (FS#52537), I'm not sure how much this is still a thing
+    # And.. I think if any I should just account for NVIDIA/libglvnd#147 and call it a day?
+    # If just it wasn't FS#64044 even killed one of the libs I cared for.. Probably on account of
+    # https://git.archlinux.org/svntogit/packages.git/commit/?h=packages/mesa&id=f183c1dc4019f4b97aa60963f1e99306b529891a
+    # So whatever, this is a reminder should anything happen.
+    #
+    #   ln -s mesa/libEGL.so.1.0.0 ${pkgdir}/usr/lib32/libEGL.so.1.0.0
+    #   ln -s libEGL.so.1.0.0 ${pkgdir}/usr/lib32/libEGL.so.1
+    #   ln -s libEGL.so.1 ${pkgdir}/usr/lib32/libEGL.so
+    #   ln -s mesa/libGLESv1_CM.so.1.0.0 ${pkgdir}/usr/lib32/libGLESv1_CM.so.1.0.0
+    #   ln -s libGLESv1_CM.so.1.0.0 ${pkgdir}/usr/lib32/libGLESv1_CM.so.1
+    #   ln -s libGLESv1_CM.so.1 ${pkgdir}/usr/lib32/libGLESv1_CM.so
+    #   ln -s mesa/libGLESv2.so.2.0.0 ${pkgdir}/usr/lib32/libGLESv2.so.2.0.0
+    #   ln -s libGLESv2.so.2.0.0 ${pkgdir}/usr/lib32/libGLESv2.so.2
+    #   ln -s libGLESv2.so.2 ${pkgdir}/usr/lib32/libGLESv2.so
 
     # OpenGL core library
     install -D -m755 "libnvidia-glcore.so.${pkgver}" "${pkgdir}/usr/lib/libnvidia-glcore.so.${pkgver}"
@@ -121,6 +132,9 @@ package_nvidia-304xx-utils() {
     # CUDA
     install -D -m755 "libcuda.so.${pkgver}" "${pkgdir}/usr/lib/libcuda.so.${pkgver}"
     install -D -m755 "libnvcuvid.so.${pkgver}" "${pkgdir}/usr/lib/libnvcuvid.so.${pkgver}"
+
+    # DEBUG
+    install -D -m755 nvidia-debugdump "${pkgdir}/usr/bin/nvidia-debugdump"
 
     # nvidia-xconfig
     install -D -m755 nvidia-xconfig "${pkgdir}/usr/bin/nvidia-xconfig"
