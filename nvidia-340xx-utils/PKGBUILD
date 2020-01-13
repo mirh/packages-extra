@@ -70,7 +70,6 @@ package_mhwd-nvidia-340xx() {
     > ${pkgdir}/var/lib/mhwd/ids/pci/nvidia-340xx.ids
 }
 
-
 package_nvidia-340xx-utils() {
     pkgdesc="NVIDIA drivers utilities"
     depends=('xorg-server' 'mesa' 'mhwd')
@@ -98,6 +97,11 @@ package_nvidia-340xx-utils() {
     install -D -m755 "libEGL.so.${pkgver}" "${pkgdir}/usr/lib/nvidia/libEGL.so.${pkgver}"
     install -D -m755 "libGLESv1_CM.so.${pkgver}" "${pkgdir}/usr/lib/nvidia/libGLESv1_CM.so.${pkgver}"
     install -D -m755 "libGLESv2.so.${pkgver}" "${pkgdir}/usr/lib/nvidia/libGLESv2.so.${pkgver}"
+
+    # Unlike 304xx, 340xx actually supports EGL and real GLES. It's still not libglvnd-compatible though. 
+    # So you still need some libs naming tinkering (if you didn't want the ld hack). But which actually?
+    # Especially considering NVIDIA/libglvnd#147, and whatever they did on FS#64044 on the probable account of
+    # git.archlinux.org/svntogit/packages.git/commit/?h=packages/mesa&id=f183c1dc4019f4b97aa60963f1e99306b529891a
 
     # OpenGL core library
     install -D -m755 "libnvidia-glcore.so.${pkgver}" "${pkgdir}/usr/lib/libnvidia-glcore.so.${pkgver}"
@@ -175,4 +179,3 @@ package_nvidia-340xx-utils() {
 
     create_links
 }
-

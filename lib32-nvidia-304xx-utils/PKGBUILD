@@ -67,10 +67,30 @@ package_lib32-nvidia-304xx-utils() {
     install -D -m755 "libGL.so.${pkgver}" "${pkgdir}/usr/lib32/nvidia/libGL.so.${pkgver}"
     ln -s "libGL.so.${pkgver}" "${pkgdir}/usr/lib32/nvidia/libGL.so.1.2"
 
-    # We have to provide symlinks to mesa, as nvidia 304xx doesn't ship them
-    ln -s /usr/lib32/libEGL.so.1.0.0 "${pkgdir}/usr/lib32/nvidia/libEGL.so.1.0.0"
-    ln -s /usr/lib32/libGLESv1_CM.so.1.0.0 "${pkgdir}/usr/lib32/nvidia/libGLESv1_CM.so.1.0.0"
-    ln -s /usr/lib32/libGLESv2.so.2.0.0 "${pkgdir}/usr/lib32/nvidia/libGLESv2.so.2.0.0"
+    # Nvidia drivers didn't support EGL (aka the way GLES is meant to be played) until 331/334 series
+    # AFAICT mesa is supposed to take its job, so that at least simpler applications work just fine (FS#39243)
+    # So symlinks here were needed in the "libgl" era, but since libglvnd (FS#52537) that isn't our business anymore
+    # Still.. This technically isn't a libglvnd-compatible driver and somebody may wish to switch away from it
+    # In fact it's way neater than the ld hack, but compiling yourself mesa takes forever... So have it here anyway
+    #
+    # ln -s libGL.so.${pkgver} ${pkgdir}/usr/lib32/nvidia/libGL.so.1
+    # ln -s libGL.so.1 ${pkgdir}/usr/lib32/nvidia/libGL.so
+    #
+    # ln -s nvidia/libGL.so.${pkgver} ${pkgdir}/usr/lib32/libGL.so.${pkgver}
+    # ln -s libGL.so.${pkgver} ${pkgdir}/usr/lib32/libGL.so.1
+    # ln -s libGL.so.1 ${pkgdir}/usr/lib32/libGL.so
+    #
+    # ln -s /usr/lib32/mesa/libEGL.so.1.0.0 "${pkgdir}/usr/lib32/nvidia/libEGL.so.1.0.0"
+    # ln -s libEGL.so.1.0.0 ${pkgdir}/usr/lib32/libEGL.so.1
+    # ln -s libEGL.so.1 ${pkgdir}/usr/lib32/libEGL.so
+    #
+    # ln -s /usr/lib32/mesa/libGLESv1_CM.so.1.0.0 "${pkgdir}/usr/lib32/nvidia/libGLESv1_CM.so.1.0.0"
+    # ln -s libGLESv1_CM.so.1.0.0 ${pkgdir}/usr/lib32/libGLESv1_CM.so.1
+    # ln -s libGLESv1_CM.so.1 ${pkgdir}/usr/lib32/libGLESv1_CM.so
+    #
+    # ln -s /usr/lib32/mesa/libGLESv2.so.2.0.0 "${pkgdir}/usr/lib32/nvidia/libGLESv2.so.2.0.0"
+    # ln -s libGLESv2.so.2.0.0 ${pkgdir}/usr/lib32/libGLESv2.so.2
+    # ln -s libGLESv2.so.2 ${pkgdir}/usr/lib32/libGLESv2.so
 
     # OpenGL core library
     install -D -m755 libnvidia-glcore.so.${pkgver} "${pkgdir}/usr/lib32/libnvidia-glcore.so.${pkgver}"

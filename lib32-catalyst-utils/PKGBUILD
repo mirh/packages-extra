@@ -62,7 +62,7 @@ package_lib32-catalyst-utils() {
       #ln -s "/usr/lib32/libGLX_mesa.so.0.0.0" "${pkgdir}/usr/lib32/libGLX_indirect.so.0"
       #ln -s "fglrx/xorg/libglx.so.1" "${pkgdir}/usr/lib32/libGLX_indirect.so.0"
 
-      # We have to provide symlinks to mesa, as catalyst doesn't ship them
+      # TODO: could it be I'm stupid and I just added needless symlinks in a libglvnd world?
       ln -s /usr/lib32/libEGL.so.1.0.0 "${pkgdir}/usr/lib32/fglrx/libEGL.so.1.0.0"
       ln -s libEGL.so.1.0.0 "${pkgdir}/usr/lib32/fglrx/libEGL.so.1"
       ln -s libEGL.so.1.0.0 "${pkgdir}/usr/lib32/fglrx/libEGL.so"
