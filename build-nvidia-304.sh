@@ -15,6 +15,8 @@ cd ../nvidia304-video
 PKGDEST=~/packages makepkg -df
 cd ../nvidia-304xx-utils
 PKGDEST=~/packages makepkg -dfC
+cd ../lib32-nvidia-304xx-utils
+SRCDEST=../nvidia-304xx-utils PKGDEST=~/packages makepkg -dfC
 cd ..
 # for f in `realpath nvidia*304*/*nv*pkg.tar*`; do _PKG+=(${f}) ; done
 
