@@ -4,6 +4,7 @@
 pkgname=('nvidia304-server')
 pkgver=1.19.7
 pkgrel=1
+pkgdesc="X.Org Server for Nvidia 304 branch driver (1.19-based)"
 arch=('i686' 'x86_64')
 depends=(xorgproto
          libxdmcp

@@ -6,9 +6,10 @@ pkgname=('catalyst-server')
 pkgver=1.17.4
 _pkgver=1.17.4-5
 pkgrel=5
+pkgdesc="X.Org Server for Catalyst driver (1.17-based)"
 arch=('i686' 'x86_64')
 depends=(catalyst-input
-         fontsproto
+         xorgproto
          libxdmcp
          libxfont
          libpciaccess
@@ -16,7 +17,7 @@ depends=(catalyst-input
          libxi
          libxaw
          libxrender
-         libdmx
+#        libdmx
          libxfixes
          libgl
          libxv
@@ -28,15 +29,6 @@ depends=(catalyst-input
          xorg-xkbcomp
          xorg-setxkbmap
          xorg-fonts-misc
-         xproto
-         randrproto
-         renderproto
-         xextproto
-         inputproto
-         kbproto
-         videoproto
-         dri2proto
-         xineramaproto
          udev
          xorg-util-macros)
 provides=('x-server' 'glamor-egl' 'xf86-video-modesetting'
@@ -104,4 +96,3 @@ package() {
   cp -rPf etc "${pkgdir}"
   cp -rPf var "${pkgdir}"
 }
-
