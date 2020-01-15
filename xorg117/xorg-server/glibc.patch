@@ -1,0 +1,77 @@
+diff --git a/configure.ac b/configure.ac
+index b380bef12..e3459b086 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -134,7 +134,7 @@ AM_CONDITIONAL(SPECIAL_DTRACE_OBJECTS, [test "x$SPECIAL_DTRACE_OBJECTS" = "xyes"
+ AC_HEADER_DIRENT
+ AC_HEADER_STDC
+ AC_CHECK_HEADERS([fcntl.h stdlib.h string.h unistd.h dlfcn.h stropts.h \
+- fnmatch.h sys/mkdev.h sys/utsname.h])
++ fnmatch.h sys/mkdev.h sys/sysmacros.h sys/utsname.h])
+ 
+ dnl Checks for typedefs, structures, and compiler characteristics.
+ AC_C_CONST
+diff --git a/hw/xfree86/common/xf86Xinput.c b/hw/xfree86/common/xf86Xinput.c
+index 1fb5b1635..3e8ca11b4 100644
+--- a/hw/xfree86/common/xf86Xinput.c
++++ b/hw/xfree86/common/xf86Xinput.c
+@@ -84,6 +84,9 @@
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <unistd.h>
++#ifdef HAVE_SYS_SYSMACROS_H
++#include <sys/sysmacros.h>
++#endif
+ #ifdef HAVE_SYS_MKDEV_H
+ #include <sys/mkdev.h>          /* for major() & minor() on Solaris */
+ #endif
+diff --git a/hw/xfree86/os-support/linux/lnx_init.c b/hw/xfree86/os-support/linux/lnx_init.c
+index 4acaf33d1..01f482984 100644
+--- a/hw/xfree86/os-support/linux/lnx_init.c
++++ b/hw/xfree86/os-support/linux/lnx_init.c
+@@ -37,6 +37,9 @@
+ #include "xf86_OSlib.h"
+ 
+ #include <sys/stat.h>
++#ifdef HAVE_SYS_SYSMACROS_H
++#include <sys/sysmacros.h>
++#endif
+ 
+ #ifndef K_OFF
+ #define K_OFF 0x4
+diff --git a/hw/xfree86/xorg-wrapper.c b/hw/xfree86/xorg-wrapper.c
+index 22e97ad5d..d8985370a 100644
+--- a/hw/xfree86/xorg-wrapper.c
++++ b/hw/xfree86/xorg-wrapper.c
+@@ -24,6 +24,7 @@
+  */
+ 
+ #include "dix-config.h"
++#include "xorg-config.h"
+ 
+ #include <errno.h>
+ #include <fcntl.h>
+@@ -34,6 +35,9 @@
+ #include <string.h>
+ #include <sys/ioctl.h>
+ #include <sys/stat.h>
++#ifdef HAVE_SYS_SYSMACROS_H
++#include <sys/sysmacros.h>
++#endif
+ #include <sys/types.h>
+ #if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
+ #include <sys/consio.h>
+diff --git a/include/xorg-config.h.in b/include/xorg-config.h.in
+index 7c03126e1..d1ef0de73 100644
+--- a/include/xorg-config.h.in
++++ b/include/xorg-config.h.in
+@@ -124,6 +124,9 @@
+ /* Define to 1 if you have the <sys/mkdev.h> header file. */
+ #undef HAVE_SYS_MKDEV_H
+ 
++/* Define to 1 if you have the <sys/sysmacros.h> header file. */
++#undef HAVE_SYS_SYSMACROS_H
++
+ /* Path to text files containing PCI IDs */
+ #undef PCI_TXT_IDS_PATH
+ 

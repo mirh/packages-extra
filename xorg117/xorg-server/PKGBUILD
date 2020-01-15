@@ -1,21 +1,18 @@
-# $Id$
 # Maintainer: AndyRTR <andyrtr@archlinux.org>
 # Maintainer: Jan de Groot <jgc@archlinux.org>
 
 pkgbase=xorg-server
-pkgname=('xorg-server' 'xorg-server-xephyr' 'xorg-server-xdmx' 'xorg-server-xvfb' 'xorg-server-xnest' 'xorg-server-xwayland' 'xorg-server-common' 'xorg-server-devel')
+pkgname=('xorg-server' 'xorg-server-xephyr' 'xorg-server-xvfb' 'xorg-server-xnest' 'xorg-server-xwayland' 'xorg-server-common' 'xorg-server-devel')
 pkgver=1.17.4
 pkgrel=5
 arch=('i686' 'x86_64')
 license=('custom')
 url="http://xorg.freedesktop.org"
-makedepends=('pixman' 'libx11' 'mesa' 'mesa-libgl' 'xf86driproto' 'xcmiscproto' 'xtrans' 'bigreqsproto' 'randrproto' 
-             'inputproto' 'fontsproto' 'videoproto' 'presentproto' 'compositeproto' 'recordproto' 'scrnsaverproto'
-             'resourceproto' 'xineramaproto' 'libxkbfile' 'libxfont' 'renderproto' 'libpciaccess' 'libxv'
-             'xf86dgaproto' 'libxmu' 'libxrender' 'libxi' 'dmxproto' 'libxaw' 'libdmx' 'libxtst' 'libxres'
-             'xorg-xkbcomp' 'xorg-util-macros' 'xorg-font-util' 'glproto' 'dri2proto' 'libgcrypt' 'libepoxy'
-             'xcb-util' 'xcb-util-image' 'xcb-util-renderutil' 'xcb-util-wm' 'xcb-util-keysyms' 'dri3proto'
-             'libxshmfence' 'libunwind') 
+makedepends=('pixman' 'libx11' 'mesa' 'mesa-libgl' 'xorgproto' 'xtrans' 'libxkbfile'
+             'libxfont' 'libpciaccess' 'libxv' 'libxmu' 'libxrender' 'libxi' 'libxaw'
+             'libxtst' 'libxres' 'xorg-xkbcomp' 'xorg-util-macros' 'xorg-font-util'
+             'libgcrypt' 'libepoxy' 'xcb-util' 'xcb-util-image' 'xcb-util-renderutil'
+             'xcb-util-wm' 'xcb-util-keysyms' 'libxshmfence' 'libunwind')
 source=(${url}/releases/individual/xserver/${pkgbase}-${pkgver}.tar.bz2{,.sig}
         nvidia-drm-outputclass.conf
         xvfb-run
@@ -39,7 +36,9 @@ sha256sums=('0c4b45c116a812a996eb432d8508cf26c2ec8c3916ff2a50781796882f8d6457'
             '3d7edab3a54d647e7d924b29d29f91b50212f308fcb1853a5aacd3181f58276c'
             'ecb0b1f73342e8c3de1563efcc812ac0235e2994d0343b392c1f51920510aa18'
             '45fdc2a1241d458756c41a93c01846e04cc75f3c75f81f48b61533d08280918d'
-            '54f70d98a53305fc6255fb3cc162b03f37d6952cbba92efec96e0992da896710')
+            '54f70d98a53305fc6255fb3cc162b03f37d6952cbba92efec96e0992da896710'
+            '76c697aea92cbb85bd0ae2dd420d8f552b7506a3f50d2604bbf690704b254662'
+            'eda422cf4589df936f45112a0e2bc4e4f89e2dc46c717ccb3b1ed10a467e5065')
 
 prepare() {
   cd "${pkgbase}-${pkgver}"
@@ -58,6 +57,11 @@ prepare() {
   # merged upstream in trunk
   patch -Np1 -i ../nvidia-add-modulepath-support.patch
 
+  # Libglvnd fix backport (X.org #893 and #914)
+  patch -Np1 -i ../libglvnd.patch
+  # Backport of c5320244 and 84e3b96b (and in turn 19b0249a)
+  patch -Np1 -i ../glibc.patch
+
   autoreconf -fvi
 }
 
@@ -66,7 +70,6 @@ build() {
   ./configure --prefix=/usr \
       --enable-ipv6 \
       --enable-dri \
-      --enable-dmx \
       --enable-xvfb \
       --enable-xnest \
       --enable-composite \
@@ -203,17 +206,6 @@ package_xorg-server-xnest() {
   ln -sf ../xorg-server-common/COPYING "${pkgdir}/usr/share/licenses/xorg-server-xnest/COPYING"
 }
 
-package_xorg-server-xdmx() {
-  pkgdesc="Distributed Multihead X Server and utilities"
-  depends=(libxfont libxi libgcrypt libxaw libxrender libdmx libxfixes pixman xorg-server-common)
-
-  cd "${pkgbase}-${pkgver}/hw/dmx"
-  make DESTDIR="${pkgdir}" install
-
-  install -m755 -d "${pkgdir}/usr/share/licenses/xorg-server-xdmx"
-  ln -sf ../xorg-server-common/COPYING "${pkgdir}/usr/share/licenses/xorg-server-xdmx/COPYING"
-}
-
 package_xorg-server-xwayland() {
   pkgdesc="run X clients under wayland"
   depends=(libxfont libepoxy libgl pixman xorg-server-common)
@@ -228,10 +220,7 @@ package_xorg-server-xwayland() {
 package_xorg-server-devel() {
   pkgdesc="Development files for the X.Org X server"
   depends=(# see pkgdir/usr/lib/pkgconfig/xorg-server.pc
-           xproto randrproto renderproto xextproto inputproto kbproto 
-           fontsproto pixman videoproto xf86driproto glproto 
-           mesa dri2proto dri3proto xineramaproto libpciaccess
-           resourceproto scrnsaverproto presentproto
+           xorgproto pixman mesa libpciaccess
            # not technically required but almost every Xorg pkg needs it to build
            xorg-util-macros)
 
