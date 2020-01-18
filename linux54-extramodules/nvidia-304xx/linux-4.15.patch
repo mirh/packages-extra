@@ -1,0 +1,35 @@
+--- a/nv.c	2017-11-27 06:50:01.623882027 -0500
++++ b/nv.c	2017-11-27 06:52:44.865473263 -0500
+@@ -301,7 +301,7 @@ irqreturn_t   nv_kern_isr(int, void *, s
+ #else
+ irqreturn_t   nv_kern_isr(int, void *);
+ #endif
+-void          nv_kern_rc_timer(unsigned long);
++void          nv_kern_rc_timer(struct timer_list *t);
+ #if defined(NV_PM_SUPPORT_OLD_STYLE_APM)
+ static int    nv_kern_apm_event(struct pm_dev *, pm_request_t, void *);
+ #endif
+@@ -2075,10 +2075,10 @@ void nv_kern_isr_bh(
+ }
+ 
+ void nv_kern_rc_timer(
+-    unsigned long data
++    struct timer_list *t
+ )
+ {
+-    nv_linux_state_t *nvl = (nv_linux_state_t *) data;
++    nv_linux_state_t *nvl = from_timer(nvl, t, rc_timer);
+     nv_state_t *nv = NV_STATE_PTR(nvl);
+ 
+     NV_CHECK_PCI_CONFIG_SPACE(nvl->timer_sp, nv, TRUE, TRUE, FALSE);
+@@ -3029,9 +3029,7 @@ int NV_API_CALL nv_start_rc_timer(
+         return -1;
+ 
+     nv_printf(NV_DBG_INFO, "NVRM: initializing rc timer\n");
+-    init_timer(&nvl->rc_timer);
+-    nvl->rc_timer.function = nv_kern_rc_timer;
+-    nvl->rc_timer.data = (unsigned long) nv;
++    timer_setup(&nvl->rc_timer, nv_kern_rc_timer, 0);
+     nv->rc_timer_enabled = 1;
+     mod_timer(&nvl->rc_timer, jiffies + HZ); /* set our timeout for 1 second */
+     nv_printf(NV_DBG_INFO, "NVRM: rc timer initialized\n");
