@@ -22,11 +22,12 @@ conflicts=('nvidia-96xx' 'nvidia-173xx' "$_linuxprefix-nvidia")
 license=('custom')
 install=nvidia.install
 options=(!strip)
-source=('linux-4.14.patch' 'linux-4.15.patch')
+source=('linux-4.14.patch' 'linux-4.15.patch' 'kmem_cache_create_usercopy.patch')
 source_i686=("http://us.download.nvidia.com/XFree86/Linux-x86/${pkgver}/NVIDIA-Linux-x86-${pkgver}.run")
 source_x86_64=("http://us.download.nvidia.com/XFree86/Linux-x86_64/${pkgver}/NVIDIA-Linux-x86_64-${pkgver}-no-compat32.run")
 md5sums=('badddcff69fc8a2d5026f927b7311869'
-         '6247228c243b7be62d50bed22bc2b124')
+         '6247228c243b7be62d50bed22bc2b124'
+         'b16781359851b9892583f491acadf563')
 md5sums_i686=('133098e70581f6b81c481338cc20f100')
 md5sums_x86_64=('485506ee6a7c54780488dacddf1d56b1')
 
@@ -42,6 +43,7 @@ prepare() {
   # Fix compile problem with 4.14
   (cd kernel; patch -p1 --no-backup-if-mismatch -i "$srcdir"/linux-4.14.patch)
   (cd kernel; patch -p1 --no-backup-if-mismatch -i "$srcdir"/linux-4.15.patch)
+  (cd kernel; patch -p1 --no-backup-if-mismatch -i "$srcdir"/kmem_cache_create_usercopy.patch)
 }
 
 build() {
