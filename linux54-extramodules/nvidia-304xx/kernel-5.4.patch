@@ -1,0 +1,41 @@
+diff --git a/Makefile.kbuild b/Makefile.kbuild
+index a5eac0d..c8cb651 100644
+--- a/Makefile.kbuild
++++ b/Makefile.kbuild
+@@ -231,7 +231,7 @@ ifndef NV_VERBOSE
+ endif
+ 
+ KBUILD_PARAMS += KBUILD_VERBOSE=$(NV_VERBOSE)
+-KBUILD_PARAMS += -C $(KERNEL_SOURCES) SUBDIRS=$(PWD)
++KBUILD_PARAMS += -C $(KERNEL_SOURCES) M=$(PWD)
+ KBUILD_PARAMS += ARCH=$(ARCH)
+ 
+ #
+diff --git a/conftest.sh b/conftest.sh
+index 58ea1c1..59cecfd 100755
+--- a/conftest.sh
++++ b/conftest.sh
+@@ -187,6 +187,23 @@ build_cflags() {
+     if [ -n "$BUILD_PARAMS" ]; then
+         CFLAGS="$CFLAGS -D$BUILD_PARAMS"
+     fi
++
++    # Check if gcc supports asm goto and set CC_HAVE_ASM_GOTO if it does.
++    # Older kernels perform this check and set this flag in Kbuild, and since
++    # conftest.sh runs outside of Kbuild it ends up building without this flag.
++    # Starting with commit e9666d10a5677a494260d60d1fa0b73cc7646eb3 this test
++    # is done within Kconfig, and the preprocessor flag is no longer needed.
++
++    GCC_GOTO_SH="$SOURCES/build/gcc-goto.sh"
++
++    if [ -f "$GCC_GOTO_SH" ]; then
++        # Newer versions of gcc-goto.sh don't print anything on success, but
++        # this is okay, since it's no longer necessary to set CC_HAVE_ASM_GOTO
++        # based on the output of those versions of gcc-goto.sh.
++        if [ `/bin/sh "$GCC_GOTO_SH" "$CC"` = "y" ]; then
++            CFLAGS="$CFLAGS -DCC_HAVE_ASM_GOTO"
++        fi
++    fi
+ }
+ 
+ CONFTEST_PREAMBLE="#include \"conftest.h\"

@@ -13,7 +13,7 @@ options=('!strip')
 source=('MHWDCONFIG' 'mhwd-nvidia' 'nvidia-drm-outputclass.conf' 'nvidia-utils.sysusers')
 source_i686=("http://us.download.nvidia.com/XFree86/Linux-x86/${pkgver}/NVIDIA-Linux-x86-${pkgver}.run")
 source_x86_64=("http://us.download.nvidia.com/XFree86/Linux-x86_64/${pkgver}/NVIDIA-Linux-x86_64-${pkgver}-no-compat32.run")
-md5sums=('d41d8cd98f00b204e9800998ecf8427e'
+md5sums=('d82be98f852dbf69873e27aa27eea9b5'
          '364555382ca8fe8b815af43d6f7e65bc'
          '768a64259f7e8d8a46a13b876d6c443c'
          '3d2894e71d81570bd00bce416d3e547d')

@@ -22,7 +22,7 @@ cd ..
 # for f in `realpath nvidia*304*/*nv*pkg.tar*`; do _PKG+=(${f}) ; done
 
 # rm -Rf */*nvidia*304*/{src,pkg}
-for k in "316 318 414 419 54"; do
+for k in 316 318 414 419 54; do
   if (pacman -Q linux$k-headers > /dev/null 2>&1); then
     cd "${_ROOT}"/linux$k-extramodules/nvidia-304xx
     SRCDEST="${_ROOT}"/nvidia-304xx-utils PKGDEST=~/packages makepkg -dfC
@@ -30,10 +30,10 @@ for k in "316 318 414 419 54"; do
     #_PKG+=`realpath linux*nvidia*pkg.tar*`
   else
     echo "You are missing the headers for linux$k. It won't be built."
-	echo "If it's not a kernel you have installed, you shouldn't worry too much."
+    echo "If it's not a kernel you have installed, you shouldn't worry too much."
   fi
 done
-if [[ -z "${_KERN// }" ]]; then 
+if [[ ! -z "${_KERN//$'\n'}" ]]; then 
   echo "Installed kernels $_KERN didn't have any module built." 
   echo "It's not my business how you are going to handle that, but mhwd definitively won't like it."
 done
