@@ -13,7 +13,7 @@ pkgrel=58
 pkgdesc="NVIDIA drivers for linux."
 arch=('i686' 'x86_64')
 url="http://www.nvidia.com/"
-depends=("$_linuxprefix" "nvidia-304xx-utils=${pkgver}")
+depends=("$_linuxprefix")
 makedepends=("$_linuxprefix-headers")
 provides=("$_pkgname=$pkgver" "$_linuxprefix-nvidia-legacy")
 replaces=("$_linuxprefix-nvidia-legacy")
@@ -50,6 +50,8 @@ build() {
 }
 
 package() {
+    depends=("nvidia-304xx-utils=${pkgver}")
+
     install -D -m644 "${srcdir}/${_pkg}/kernel/nvidia.ko" \
         "${pkgdir}/usr/lib/modules/${_extramodules}/nvidia.ko"
     sed -i -e "s/EXTRAMODULES='.*'/EXTRAMODULES='${_extramodules}'/" "${startdir}/nvidia.install"

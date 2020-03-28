@@ -15,7 +15,7 @@ groups=("$_linuxprefix-extramodules")
 pkgdesc="NVIDIA drivers for linux."
 arch=('i686' 'x86_64')
 url="http://www.nvidia.com/"
-depends=("$_linuxprefix" "nvidia-340xx-utils=${pkgver}")
+depends=("$_linuxprefix")
 makedepends=("$_linuxprefix-headers")
 conflicts=('nvidia-96xx' 'nvidia-183xx' "$_linuxprefix-nvidia" "$_linuxprefix-nvidia-304xx")
 license=('custom')
@@ -54,6 +54,8 @@ build() {
 }
 
 package() {
+    depends=("nvidia-340xx-utils=${pkgver}")
+
     install -D -m644 "${srcdir}/${_pkg}/kernel/nvidia.ko" \
         "${pkgdir}/usr/lib/modules/${_extramodules}/nvidia.ko"
     install -D -m644 "${srcdir}/${_pkg}/kernel/uvm/nvidia-uvm.ko" \
