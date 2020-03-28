@@ -16,18 +16,19 @@ cd "${_ROOT}"/catalyst-server
 PKGDEST=~/packages makepkg -sf
 cd ../catalyst-video
 PKGDEST=~/packages makepkg -f
+cd ../catalyst-input
+PKGDEST=~/packages makepkg -f
 cd ../catalyst-utils
 PKGDEST=~/packages makepkg -fC
 cd ../lib32-catalyst-utils
 SRCDEST=../catalyst-utils PKGDEST=~/packages makepkg -fC
 cd ..
 
-for k in 316 318 414 419 54; do
+for k in 316 318 44 49 414 419 52; do
   if (pacman -Q linux$k-headers > /dev/null 2>&1); then
-    cd "${_ROOT}"/linux$k-extramodules/nvidia-304xx
-    SRCDEST="${_ROOT}"/nvidia-304xx-utils PKGDEST=~/packages makepkg -dfC
+    cd "${_ROOT}"/linux$k-extramodules/catalyst
+    SRCDEST="${_ROOT}"/catalyst-utils PKGDEST=~/packages makepkg -fC
     _KERN=${_KERN//linux$k/}
-    #_PKG+=`realpath linux*nvidia*pkg.tar*`
   else
     echo "You are missing the headers for linux$k. It won't be built."
     echo "If it's not a kernel you have installed, you shouldn't worry too much."
