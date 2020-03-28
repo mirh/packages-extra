@@ -13,7 +13,7 @@ url="http://www.amd.com"
 arch=(x86_64)
 license=('custom')
 groups=('lib32')
-depends=('lib32-libxext' 'lib32-libdrm' 'lib32-mesa' 'catalyst-utils' 'mhwd')
+depends=('lib32-libxext' 'lib32-libdrm' 'lib32-mesa' 'mhwd')
 conflicts=('lib32-catalyst-legacy-utils' 'lib32-catalyst-13.4-utils')
 install="${pkgname}.install"
 source=(https://www2.ati.com/drivers/linux/amd-catalyst-15.9-linux-installer-15.201.1151-x86.x86_64.zip
@@ -42,6 +42,8 @@ prepare() {
 }
 
 package_lib32-catalyst-utils() {
+      depends=(catalyst-utils)
+
       cd "${srcdir}"
       install -D -m755 lib32-catalyst.sh "${pkgdir}/etc/profile.d/lib32-catalyst.sh"
       cd "${srcdir}/fglrx-$_pkgver/archive_files/arch/x86/usr"

@@ -21,7 +21,6 @@ depends=(glibc
          libxrandr
          libxss
          libxtst
-         'nvidia304-server<1.20.0'
 )
 provides=(xf86-video-ati=$_ati
           xf86-video-amdgpu=$_amdgpu
@@ -70,6 +69,8 @@ sha256sums=('c38ebc327fc4d789420549ca004bd665407763717a33f6001d38fadda1481042'
 fi
 
 package() {
+  depends=('nvidia304-server<1.20.0')
+
   cp -rPf usr "${pkgdir}"
 }
 

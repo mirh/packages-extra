@@ -18,7 +18,6 @@ depends=(glibc
          libxrandr
          libxss
          libxtst
-         'catalyst-server<1.18.0'
 )
 provides=(xf86-video-fbdev=$_fbdev
           xf86-video-intel=$_intel
@@ -52,6 +51,8 @@ sha256sums=('237b03c8320a0f66e3aa3ee9699d1597b20c9a9d422ee2a89104daa06c395888'
 fi
 
 package() {
+  depends=('catalyst-server<1.18.0')
+
   cp -rPf usr "${pkgdir}"
 }
 

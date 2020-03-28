@@ -1,7 +1,7 @@
 #!/bin/bash
 # Remember sudo has stupid timeouts
 # And upstream is obnoxious (FS#65134)
-_KERN=`cat /usr/lib/modules/*/pkgbase` # or you could use&filter mhwd -li I guess?
+_KERN=`cat /usr/lib/modules/*/pkgbase` # Arch kernels before 5.3.2.arch2 (or lts419) were missing this
 _ROOT=`dirname "$(realpath "$0")"`
 _PKG=""
 set -e
@@ -13,11 +13,11 @@ makepkg -s
 cd ../../nvidia304-server
 SRCDEST=../xorg119/xorg-server PKGDEST=~/packages makepkg -sf
 cd ../nvidia304-video
-PKGDEST=~/packages makepkg -df
+PKGDEST=~/packages makepkg -f
 cd ../nvidia-304xx-utils
-PKGDEST=~/packages makepkg -dfC
+PKGDEST=~/packages makepkg -fC
 cd ../lib32-nvidia-304xx-utils
-SRCDEST=../nvidia-304xx-utils PKGDEST=~/packages makepkg -dfC
+SRCDEST=../nvidia-304xx-utils PKGDEST=~/packages makepkg -fC
 cd ..
 # for f in `realpath nvidia*304*/*nv*pkg.tar*`; do _PKG+=(${f}) ; done
 
@@ -36,7 +36,7 @@ done
 if [[ ! -z "${_KERN//$'\n'}" ]]; then 
   echo "Installed kernels $_KERN didn't have any module built." 
   echo "It's not my business how you are going to handle that, but mhwd definitively won't like it."
-done
+fi
 
 # echo ${_PKG[*]}
 if grep -qw legacyhw /etc/pacman.conf; then

@@ -1,15 +1,15 @@
 post_install() {
-    EXTRAMODULES='extramodules-4.17-MANJARO'
+    EXTRAMODULES='extramodules-5.4-MANJARO'
     depmod $(cat /usr/lib/modules/$EXTRAMODULES/version)
     echo 'In order to use nvidia module, reboot the system.'
 }
 
 post_upgrade() {
-    EXTRAMODULES='extramodules-4.17-MANJARO'
+    EXTRAMODULES='extramodules-5.4-MANJARO'
     depmod $(cat /usr/lib/modules/$EXTRAMODULES/version)
 }
 
 post_remove() {
-    EXTRAMODULES='extramodules-4.17-MANJARO'
+    EXTRAMODULES='extramodules-5.4-MANJARO'
     depmod $(cat /usr/lib/modules/$EXTRAMODULES/version)
 }

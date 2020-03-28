@@ -1,5 +1,6 @@
 src
 pkg
+xserver
 *.pkg.*
 *.src.*
 *.tar.*
@@ -7,6 +8,7 @@ pkg
 *.run
 *.zip
 *.xz
+*.ids
 *.log
 *~
 .AURINFO

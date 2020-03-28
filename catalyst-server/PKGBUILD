@@ -8,8 +8,7 @@ _pkgver=1.17.4-5
 pkgrel=5
 pkgdesc="X.Org Server for Catalyst driver (1.17-based)"
 arch=('i686' 'x86_64')
-depends=(catalyst-input
-         xorgproto
+depends=(xorgproto
          libxdmcp
          libxfont
          libpciaccess
@@ -92,6 +91,8 @@ sha256sums_x86_64=('f569cf9675982af88b5028cd8cad0027a0ac563a8c3cd49cd0c1cfc3e0b0
                    'ac09b3c3559c49f9a534aab80e4dc70b1b6c3f84056a581d9123f3de19b068fd')
 
 package() {
+  depends=("catalyst-input")
+
   cp -rPf usr "${pkgdir}"
   cp -rPf etc "${pkgdir}"
   cp -rPf var "${pkgdir}"
