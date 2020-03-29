@@ -22,7 +22,7 @@ cd ..
 # for f in `realpath nvidia*304*/*nv*pkg.tar*`; do _PKG+=(${f}) ; done
 
 # rm -Rf */*nvidia*304*/{src,pkg}
-for k in 316 318 414 419 54; do
+for k in 316 318 44 49 414 419 54; do
   if (pacman -Q linux$k-headers > /dev/null 2>&1); then
     cd "${_ROOT}"/linux$k-extramodules/nvidia-304xx
     SRCDEST="${_ROOT}"/nvidia-304xx-utils PKGDEST=~/packages makepkg -dfC

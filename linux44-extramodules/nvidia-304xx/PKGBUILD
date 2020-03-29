@@ -22,11 +22,10 @@ conflicts=('nvidia-96xx' 'nvidia-173xx' "$_linuxprefix-nvidia")
 license=('custom')
 install=nvidia.install
 options=(!strip)
-source=('disable-mtrr.patch' 'nvidia-3.18.patch')
+source=('buildfix_kernel_4.4_get_user_pages.patch')
 source_i686=("http://us.download.nvidia.com/XFree86/Linux-x86/${pkgver}/NVIDIA-Linux-x86-${pkgver}.run")
 source_x86_64=("http://us.download.nvidia.com/XFree86/Linux-x86_64/${pkgver}/NVIDIA-Linux-x86_64-${pkgver}-no-compat32.run")
-md5sums=('c4becf1145a139cc0121be9ad340bcd8'
-         '79671a27131da619a33eb02ed0c2c031')
+md5sums=('4dec16a71aa4db885349d682393548b1')
 md5sums_i686=('133098e70581f6b81c481338cc20f100')
 md5sums_x86_64=('485506ee6a7c54780488dacddf1d56b1')
 
@@ -38,10 +37,7 @@ prepare() {
   sh "$_pkg.run" --extract-only
   cd "${_pkg}"
   # patches here
-  # https://devtalk.nvidia.com/default/topic/783364/343-22-driver-incompatible-with-linux-3-18-/
-  patch -p0 --no-backup-if-mismatch -i ${srcdir}/nvidia-3.18.patch
-  # FS#47092
-  (cd kernel; patch -p1 --no-backup-if-mismatch -i "$srcdir"/disable-mtrr.patch)
+  (cd kernel; patch -p1 --no-backup-if-mismatch -i "$srcdir"/buildfix_kernel_4.4_get_user_pages.patch)
 }
 
 build() {
