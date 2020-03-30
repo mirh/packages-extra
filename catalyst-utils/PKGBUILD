@@ -6,9 +6,9 @@
 _testing=n # For testing with a newer GCN card (released until the end of 2015 at least)
 
 pkgbase=catalyst-utils
-pkgname=('catalyst-utils' 'opencl-catalyst' 'mhwd-catalyst')
-pkgver=15.302.2301
-pkgrel=18
+pkgname=('catalyst-utils' 'mhwd-catalyst')
+pkgver=15.12
+pkgrel=1
 _execlineorig="Exec=amdxdg-su -c amdcccle"
 _execlinenew="Exec=xdg-su amdcccle"
 pkgdesc="AMD/ATI Catalyst drivers utilities and libraries."
@@ -17,9 +17,7 @@ url="http://www.amd.com"
 license=('custom')
 source=("https://drivers.amd.com/drivers/linux/amd-catalyst-15.9-linux-installer-15.201.1151-x86.x86_64.zip"
         "https://drivers.amd.com/drivers/firepro/15.302.2301-linux-retail_end_user.zip"
-        "http://techeng.amd.com/1417/15.201.1701-150915a-294997C-AES.zip"
        #"https://www2.ati.com/drivers/embedded/15.302.2301-160625a-311286e-aes.zip"
-       #"http:s//www2.ati.com/drivers/embedded/15.201-160507a-311613e-aes.zip"
     "https://raw.githubusercontent.com/pciutils/pciids/ab8e0dc2f9bcc6d7cf49866c769175cf0e119dd2/pci.ids"
     #https://launchpad.net/ubuntu/+archive/primary/+files/fglrx-installer_${_tarball}.orig.tar.gz
     catalyst.sh
@@ -37,7 +35,6 @@ DLAGENTS="https::/usr/bin/curl --referer ${url_ref} -o %o %u"
 
 sha256sums=('bf3e6e7d5c51db3d075410a3f116f865b82823debc1d66698d187249feec6a91'
             '3acff4f15946394112311e32e9db723546ec4c4da89c1f6c4f420060c507c150'
-            'ff9d6932593dbba6d9f900f0381666bd8a2a8e4d68b215cc422f84d233ffcf14'
             'SKIP'
             'd5583bfb5977f73b4ca65533030f490350daca9e0ed10aefe517ffb70817531e'
             '9b347c3f518ddf12bb08a3cf09afcc3096e5dd4488e7ca3445df97b392985e8b'
@@ -52,14 +49,13 @@ sha256sums=('bf3e6e7d5c51db3d075410a3f116f865b82823debc1d66698d187249feec6a91'
 
 prepare() {
 	/bin/sh ./AMD-Catalyst-15.9-Linux-installer-15.201.1151-x86.x86_64.run --extract 15.9
-	/bin/sh ./fglrx-15.201.1701/amd-driver-installer-15.201.1701-x86.x86_64.run --extract 15.201
 	/bin/sh ./fglrx-15.302.2301/amd-driver-installer-15.302.2301-x86.x86_64.run --extract 15.302
 
 }
 
 package_catalyst-utils() {
 	pkgdesc="AMD Catalyst drivers utilities and libraries."
-	depends=('catalyst-video' 'catalyst-server>=1.7.0' 'catalyst-server<1.18.0' 'libxrandr' 'libsm' 'fontconfig' 'libxcursor' 'libxi' 'gcc-libs' 'libxinerama' 'mesa' 'mhwd' 'xdg-su')
+	depends=('catalyst' 'catalyst-video' 'X-ABI-VIDEODRV_VERSION<=19' 'libxrandr' 'libsm' 'fontconfig' 'libxcursor' 'libxi' 'gcc-libs' 'libxinerama' 'mesa' 'mhwd' 'xdg-su')
         optdepends=('qt4: to run ATi Catalyst Control Center (amdcccle)'
 		    'libxxf86vm: to run ATi Catalyst Control Center (amdcccle)'
 		    'acpid: acpi event support  / atieventsd'
@@ -223,38 +219,6 @@ package_catalyst-utils() {
 
     install -dm 755 "${pkgdir}"/etc/ld.so.conf.d
     echo -e '/usr/lib/fglrx/' > "${pkgdir}"/etc/ld.so.conf.d/00-fglrx.conf
-}
-
-package_opencl-catalyst() {
-      pkgdesc="OpenCL implemention from AMD"
-      provides=('opencl-driver')
-      conflicts=('opencl-amd' 'opencl-catalyst-legacy' 'opencl-catalyst-13.4')
-      depends=('gcc-libs')
-      optdepends=('opencl-headers: headers necessary for OpenCL development'
-                  'opencl-icd-loader: OpenCL ICD Bindings')
-
-      cd "${srcdir}/15.201"
-      
-      install -dm755 "${pkgdir}"/usr/{bin,lib}
-      install -dm755 "${pkgdir}/etc/OpenCL/vendors"
-      install -dm755 "${pkgdir}/usr/share/licenses/${pkgname}"
-
-      if [ "${CARCH}" = "i686" ]; then
-      _ARCHDIR="x86"
-      _ARCHLIB=""
-      else
-      _ARCHDIR="x86_64"
-      _ARCHLIB="64"
-      fi
-      
-      cd "${srcdir}/15.201/arch/${_ARCHDIR}"
-      install -m755 usr/bin/clinfo "${pkgdir}/usr/bin/"
-      install -m644 etc/OpenCL/vendors/amdocl*.icd "${pkgdir}/etc/OpenCL/vendors/"
-      install -m755 usr/lib${_ARCHLIB}/libamdocl*.so "${pkgdir}/usr/lib/"
-#      install -m755 usr/lib${_ARCHLIB}/libOpenCL.so.1 "${pkgdir}/usr/lib/"      #opencl-icd-loader provides this
-#      ln -s libOpenCL.so.1 "${pkgdir}/usr/lib/libOpenCL.so"
-      # license
-      install -m644 "${srcdir}/15.201/LICENSE.TXT" "${pkgdir}/usr/share/licenses/${pkgname}/"
 }
 
 package_mhwd-catalyst() {

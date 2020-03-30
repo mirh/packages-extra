@@ -14,7 +14,6 @@ pkgdesc="AMD/ATI Catalyst drivers for linux. fglrx kernel module only."
 arch=('i686' 'x86_64')
 url="http://www.amd.com"
 license=('custom')
-depends=("$_linuxprefix")
 makedepends=("$_linuxprefix-headers")
 conflicts=('catalyst-legacy' "$_linuxprefix-catalyst-legacy")
 install=catalyst.install
@@ -112,7 +111,7 @@ build() {
 
 
 package() {
-	depends=("catalyst-utils=${pkgver}")
+	depends=("$_linuxprefix" "catalyst-utils")
 
 	cd "${srcdir}/fglrx-$_pkgver/archive_files/common/lib/modules/fglrx/build_mod"
 	install -m755 -d "${pkgdir}/usr/lib/modules/${_extramodules}/"

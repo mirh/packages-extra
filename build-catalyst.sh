@@ -20,6 +20,8 @@ cd ../catalyst-input
 PKGDEST=~/packages makepkg -f
 cd ../catalyst-utils
 PKGDEST=~/packages makepkg -fC
+cd ../catalyst-opencl
+PKGDEST=~/packages makepkg -fC
 cd ../lib32-catalyst-utils
 SRCDEST=../catalyst-utils PKGDEST=~/packages makepkg -fC
 cd ..

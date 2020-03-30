@@ -95,7 +95,7 @@ build() {
 
 
 package() {
-	depends=("catalyst-utils=${pkgver}")
+	depends=("$_linuxprefix" "catalyst-utils")
 
 	cd "${srcdir}/fglrx-$_pkgver/archive_files/common/lib/modules/fglrx/build_mod"
 	install -m755 -d "${pkgdir}/usr/lib/modules/${_extramodules}/"

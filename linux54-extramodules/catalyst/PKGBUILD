@@ -14,7 +14,6 @@ pkgdesc="AMD/ATI Catalyst drivers for linux. fglrx kernel module only."
 arch=('i686' 'x86_64')
 url="http://www.amd.com"
 license=('custom')
-depends=("$_linuxprefix")
 makedepends=("$_linuxprefix-headers")
 conflicts=('catalyst-legacy' "$_linuxprefix-catalyst-legacy")
 install=catalyst.install
@@ -143,14 +142,14 @@ build() {
 	cp 2.6.x/Makefile .
 
 	## Compile module using _ati_check variables
-	make -C /usr/lib/modules/${_kernver}/build SUBDIRS="`pwd`" ARCH=${BUILDARCH} \
+	make -C /usr/lib/modules/${_kernver}/build M="`pwd`" ARCH=${BUILDARCH} \
 	MODFLAGS="-DMODULE -DATI -DFGL -DPAGE_ATTR_FIX=$PAGE_ATTR_FIX -DCOMPAT_ALLOC_USER_SPACE=$COMPAT_ALLOC_USER_SPACE $def_smp $def_modversions" \
 	PAGE_ATTR_FIX=$PAGE_ATTR_FIX COMPAT_ALLOC_USER_SPACE=$COMPAT_ALLOC_USER_SPACE modules
 }
 
 
 package() {
-	depends=("catalyst-utils=${pkgver}")
+	depends=("$_linuxprefix" "catalyst-utils")
 
 	_kernver="$(cat /usr/lib/modules/${_extramodules}/version)"
 
