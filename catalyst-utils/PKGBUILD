@@ -55,8 +55,9 @@ prepare() {
 
 package_catalyst-utils() {
 	pkgdesc="AMD Catalyst drivers utilities and libraries."
-	depends=('catalyst' 'catalyst-video' 'X-ABI-VIDEODRV_VERSION<=19' 'libxrandr' 'libsm' 'fontconfig' 'libxcursor' 'libxi' 'gcc-libs' 'libxinerama' 'mesa' 'mhwd' 'xdg-su')
-        optdepends=('qt4: to run ATi Catalyst Control Center (amdcccle)'
+	depends=('catalyst>=15.11' 'catalyst-video' 'X-ABI-VIDEODRV_VERSION>=4.1' 'X-ABI-VIDEODRV_VERSION<=19' 
+		'libxrandr' 'libsm' 'fontconfig' 'libxcursor' 'libxi' 'gcc-libs' 'libxinerama' 'mesa' 'xdg-su' 'mhwd')
+	optdepends=('qt4: to run ATi Catalyst Control Center (amdcccle)'
 		    'libxxf86vm: to run ATi Catalyst Control Center (amdcccle)'
 		    'acpid: acpi event support  / atieventsd'
 		    'opencl-catalyst: OpenCL implemention for AMD Catalyst')

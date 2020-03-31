@@ -5,9 +5,9 @@ _linuxprefix=linux419
 _extramodules=extramodules-4.19-MANJARO
 pkgname=$_linuxprefix-catalyst
 _pkgname=catalyst
-pkgver=15.201.1151
-pkgrel=73
-_pkgver=15.201.1151
+pkgver=15.302.2301
+pkgrel=1
+_pkgver=15.12
 provides=("$_pkgname=$_pkgver")
 groups=("$_linuxprefix-extramodules")
 pkgdesc="AMD/ATI Catalyst drivers for linux. fglrx kernel module only."
@@ -18,7 +18,7 @@ makedepends=("$_linuxprefix-headers")
 conflicts=('catalyst-legacy' "$_linuxprefix-catalyst-legacy")
 install=catalyst.install
 
-source=(https://drivers.amd.com/drivers/linux/amd-catalyst-15.9-linux-installer-${_pkgver}-x86.x86_64.zip
+source=(https://drivers.amd.com/drivers/firepro/15.302.2301-linux-retail_end_user.zip
         #https://launchpad.net/ubuntu/+archive/primary/+files/fglrx-installer_${_tarball}.orig.tar.gz
         ati_make.sh
         makefile_compat.patch
@@ -47,7 +47,7 @@ source=(https://drivers.amd.com/drivers/linux/amd-catalyst-15.9-linux-installer-
 url_ref="https://support.amd.com/en-us/download/desktop?os=Linux+x86"
 DLAGENTS="https::/usr/bin/curl --referer ${url_ref} -o %o %u"
 
-sha256sums=('bf3e6e7d5c51db3d075410a3f116f865b82823debc1d66698d187249feec6a91'
+sha256sums=('3acff4f15946394112311e32e9db723546ec4c4da89c1f6c4f420060c507c150'
             '8b2adf804c2691d075bb75fbb626be59f3769a2f4f1418554fc3de91a65451ab'
             'd344df75ffbe9bd899e288862f41983c2e24b5eff3e7e8cf02d4891eeb137fff'
             'd7ab220204976b5802dbfa7cbd05ec0c5a9ff3524a2020b1b8deff4f601a05fa'
@@ -74,21 +74,13 @@ sha256sums=('bf3e6e7d5c51db3d075410a3f116f865b82823debc1d66698d187249feec6a91'
 
 prepare() {
 	#cd ${srcdir}/fglrx-$_pkgver
-	/bin/sh ./AMD-Catalyst-15.9-Linux-installer-${_pkgver}-x86.x86_64.run --extract archive_files
+	/bin/sh ./fglrx-15.302.2301/amd-driver-installer-15.302.2301-x86.x86_64.run --extract archive_files
 	#/bin/sh ./amd-catalyst-${_pkgver}-linux-x86.x86_64.run --extract archive_files
-
-	# move files
-	#mkdir common
-	#mv etc lib usr common
-	#mkdir -p fglrx-$_pkgver/archive_files
-	#mv arch common xpic xpic_64a LICENSE.TXT fglrx-$_pkgver/archive_files
-	mkdir -p fglrx-$_pkgver
-	mv archive_files fglrx-$_pkgver
 
 	# page_cache_release() -> put_page(); 09cbfeaf1a5a67bfb3201e0c83c810cecb2efa5a
 	# get_user_pages() to not pass tsk/mm; d4edcf0d56958db0aca0196314ca38a5e730ea92
-	sed -i 's|page_cache_release|put_page|g' "${srcdir}/fglrx-$_pkgver/archive_files/common/lib/modules/fglrx/build_mod/firegl_public.c"
-	sed -i 's|get_user_pages(current, current->mm, |get_user_pages(|g'  "${srcdir}/fglrx-$_pkgver/archive_files/common/lib/modules/fglrx/build_mod/firegl_public.c"
+	sed -i 's|page_cache_release|put_page|g' "${srcdir}/archive_files/common/lib/modules/fglrx/build_mod/firegl_public.c"
+	sed -i 's|get_user_pages(current, current->mm, |get_user_pages(|g'  "${srcdir}/archive_files/common/lib/modules/fglrx/build_mod/firegl_public.c"
 }
 
 build() {
@@ -108,14 +100,13 @@ build() {
 		_archdir=x86
 	fi
 
-	cd "${srcdir}/fglrx-$_pkgver/archive_files"
+	cd "${srcdir}/archive_files"
 
 	## makefile patch to choose arch_compat_alloc_user_space or older compat_alloc_user_space
 	## works only in combination with ati_make.sh script
         patch -Np1 -i  ${srcdir}/makefile_compat.patch
         patch -Np1 -i  ${srcdir}/lano1106_fglrx_intel_iommu.patch
         patch -Np1 -i  ${srcdir}/lano1106_kcl_agp_13_4.patch
-        patch -Np1 -i  ${srcdir}/4.2-amd-from_crimson_15.11.patch
         patch -Np1 -i  ${srcdir}/4.3-kolasa-seq_printf.patch
         patch -Np1 -i  ${srcdir}/4.3-gentoo-mtrr.patch
         patch -Np1 -i  ${srcdir}/fglrx_gpl_symbol.patch
@@ -134,8 +125,8 @@ build() {
         patch -Np1 -i  ${srcdir}/4.17-manjaro.patch
         patch -Np1 -i  ${srcdir}/4.19-manjaro.patch
 
-        cd "${srcdir}/fglrx-$_pkgver/archive_files/common/lib/modules/fglrx/build_mod"
-	cp "${srcdir}/fglrx-$_pkgver/archive_files/arch/${_archdir}/lib/modules/fglrx/build_mod/libfglrx_ip.a" .
+        cd "${srcdir}/archive_files/common/lib/modules/fglrx/build_mod"
+	cp "${srcdir}/archive_files/arch/${_archdir}/lib/modules/fglrx/build_mod/libfglrx_ip.a" .
 	cp 2.6.x/Makefile .
 
 	## Compile module using _ati_check variables
@@ -150,14 +141,14 @@ package() {
 
 	_kernver="$(cat /usr/lib/modules/${_extramodules}/version)"
 
-	cd "${srcdir}/fglrx-$_pkgver/archive_files/common/lib/modules/fglrx/build_mod"
+	cd "${srcdir}/archive_files/common/lib/modules/fglrx/build_mod"
 	install -m755 -d "${pkgdir}/usr/lib/modules/${_extramodules}/"
 	install -m644 fglrx.ko "${pkgdir}/usr/lib/modules/${_extramodules}/"
 	find "${pkgdir}" -name '*.ko' -exec gzip -9 {} \;
 
 	## License
 	install -m755 -d "${pkgdir}/usr/share/licenses/${pkgname}"
-	install -m644 "${srcdir}/fglrx-$_pkgver/archive_files/LICENSE.TXT" "${pkgdir}/usr/share/licenses/${pkgname}"
+	install -m644 "${srcdir}/archive_files/LICENSE.TXT" "${pkgdir}/usr/share/licenses/${pkgname}"
 
 	## Install script
 	sed -i -e "s/KERNEL_VERSION=.*/KERNEL_VERSION=${_kernver}/" "$startdir"/*.install
