@@ -25,7 +25,6 @@ source=(https://drivers.amd.com/drivers/firepro/15.302.2301-linux-retail_end_use
         lano1106_fglrx_intel_iommu.patch
         lano1106_kcl_agp_13_4.patch
         makefile_compat.patch
-        kolasa_fglrx_312.patch
 	LICENSE.TXT)
 
 url_ref="http://support.amd.com/en-us/download/desktop?os=Linux+x86"
@@ -36,15 +35,19 @@ sha256sums=('3acff4f15946394112311e32e9db723546ec4c4da89c1f6c4f420060c507c150'
             'd7ab220204976b5802dbfa7cbd05ec0c5a9ff3524a2020b1b8deff4f601a05fa'
             '37344e6949b391a54491bcba68c2239393e442a00114ee36fe25d775d9656520'
             'd344df75ffbe9bd899e288862f41983c2e24b5eff3e7e8cf02d4891eeb137fff'
-            '8fe103d8c0ae676d68ea518337024126bcdda7fc7befd57d5d2545e4f160736d'
             '4f7530540f6e1ea032746e94bd164160abdf93c15509bfb8bdbecd23bcea5c47'
 )
 
 prepare() {
-	#cd ${srcdir}/fglrx-$_pkgver
 	/bin/sh ./fglrx-15.302.2301/amd-driver-installer-15.302.2301-x86.x86_64.run --extract archive_files
-	#/bin/sh ./amd-catalyst-${_pkgver}-linux-x86.x86_64.run --extract archive_files
 
+	cd "${srcdir}/archive_files"
+
+	## makefile patch to choose arch_compat_alloc_user_space or older compat_alloc_user_space
+	## works only in combination with ati_make.sh script
+	patch -Np1 -i "${srcdir}/makefile_compat.patch"
+	patch -Np1 -i "${srcdir}/lano1106_fglrx_intel_iommu.patch"
+	patch -Np1 -i "${srcdir}/lano1106_kcl_agp_13_4.patch"
 }
 
 build() {
@@ -64,16 +67,6 @@ build() {
 		_archdir=x86
 	fi
 
-	cd "${srcdir}/archive_files"
-
-	## makefile patch to choose arch_compat_alloc_user_space or older compat_alloc_user_space
-	## works only in combination with ati_make.sh script
-	patch -Np1 -i "${srcdir}/makefile_compat.patch"
-	patch -Np1 -i "${srcdir}/lano1106_fglrx_intel_iommu.patch"
-	patch -Np1 -i "${srcdir}/lano1106_kcl_agp_13_4.patch"
-
-	cd "${srcdir}/archive_files/common/lib/modules/fglrx/build_mod"
-        patch -Np1 -i "${srcdir}/kolasa_fglrx_312.patch"
 	cp "${srcdir}/archive_files/arch/${_archdir}/lib/modules/fglrx/build_mod/libfglrx_ip.a" .
 	cp 2.6.x/Makefile .
 

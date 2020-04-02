@@ -27,7 +27,6 @@ source=(https://drivers.amd.com/drivers/firepro/15.302.2301-linux-retail_end_use
         fglrx_gpl_symbol.patch
         4.3-kolasa-seq_printf.patch
         4.3-gentoo-mtrr.patch
-        4.2-amd-from_crimson_15.11.patch
         crimson_i686_xg.patch
         4.4-manjaro-xstate.patch
         grsec_arch.patch
@@ -45,7 +44,6 @@ sha256sums=('3acff4f15946394112311e32e9db723546ec4c4da89c1f6c4f420060c507c150'
             'bf9cfd7252b3a33c50087233f7270180c0f59837bcc9a82482a0367c995c89e6'
             '33b87af3b1b5ab53b32bf972949db1e845beebe1e3d7effc06d11cf8c57f3768'
             '2881026d607f242efc4569bd39d647eae4f2e402da06de5b90476a57c349777c'
-            'd4fdd09b5897eccaccaaa95a3b5a8846ccd7c6f63b3e63659a0fc0f7f3cf661b'
             'cae7603b0b4dfb6594a7d2c7de83f7e37dd2567486a1aced5870b4611a09f422'
             '411c7aea2929cc9bb776cb1ba1df57e1d0f75ee6c84766a7fb791cb6f82446d2'
             'd3695c90d14de5a52a7f4c878ec161a0282ae169c59bbf953950aad7bfb59fdc'
@@ -53,10 +51,22 @@ sha256sums=('3acff4f15946394112311e32e9db723546ec4c4da89c1f6c4f420060c507c150'
             '4f7530540f6e1ea032746e94bd164160abdf93c15509bfb8bdbecd23bcea5c47')
 
 prepare() {
-	#cd ${srcdir}/fglrx-$_pkgver
 	/bin/sh ./fglrx-15.302.2301/amd-driver-installer-15.302.2301-x86.x86_64.run --extract archive_files
-	#/bin/sh ./amd-catalyst-${_pkgver}-linux-x86.x86_64.run --extract archive_files
 
+	cd "${srcdir}/archive_files"
+
+	## makefile patch to choose arch_compat_alloc_user_space or older compat_alloc_user_space
+	## works only in combination with ati_make.sh script
+        patch -Np1 -i  ${srcdir}/makefile_compat.patch
+        patch -Np1 -i  ${srcdir}/lano1106_fglrx_intel_iommu.patch
+        patch -Np1 -i  ${srcdir}/lano1106_kcl_agp_13_4.patch
+        patch -Np1 -i  ${srcdir}/fglrx_gpl_symbol.patch
+        patch -Np1 -i  ${srcdir}/4.3-kolasa-seq_printf.patch
+        patch -Np1 -i  ${srcdir}/4.3-gentoo-mtrr.patch
+        test "${CARCH}" = "i686" && patch -Np1 -i  ${srcdir}/crimson_i686_xg.patch
+        patch -Np1 -i  ${srcdir}/4.4-manjaro-xstate.patch
+        patch -Np1 -i  ${srcdir}/grsec_arch.patch
+        patch -Np2 -i  ${srcdir}/4.9-manjaro-back.patch
 }
 
 build() {
@@ -75,21 +85,6 @@ build() {
 		BUILDARCH=i386
 		_archdir=x86
 	fi
-
-	cd "${srcdir}/archive_files"
-
-	## makefile patch to choose arch_compat_alloc_user_space or older compat_alloc_user_space
-	## works only in combination with ati_make.sh script
-        patch -Np1 -i  ${srcdir}/makefile_compat.patch
-        patch -Np1 -i  ${srcdir}/lano1106_fglrx_intel_iommu.patch
-        patch -Np1 -i  ${srcdir}/lano1106_kcl_agp_13_4.patch
-        patch -Np1 -i  ${srcdir}/4.3-kolasa-seq_printf.patch
-        patch -Np1 -i  ${srcdir}/4.3-gentoo-mtrr.patch
-        patch -Np1 -i  ${srcdir}/fglrx_gpl_symbol.patch
-        test "${CARCH}" = "i686" && patch -Np1 -i  ${srcdir}/crimson_i686_xg.patch
-        patch -Np1 -i  ${srcdir}/4.4-manjaro-xstate.patch
-        patch -Np1 -i  ${srcdir}/grsec_arch.patch
-        patch -Np2 -i  ${srcdir}/4.9-manjaro-back.patch
 
         cd "${srcdir}/archive_files/common/lib/modules/fglrx/build_mod"
 	cp "${srcdir}/archive_files/arch/${_archdir}/lib/modules/fglrx/build_mod/libfglrx_ip.a" .

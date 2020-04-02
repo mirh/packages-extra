@@ -27,13 +27,12 @@ source=(https://drivers.amd.com/drivers/firepro/15.302.2301-linux-retail_end_use
         fglrx_gpl_symbol.patch
         4.3-kolasa-seq_printf.patch
         4.3-gentoo-mtrr.patch
-        4.2-amd-from_crimson_15.11.patch
         crimson_i686_xg.patch
         4.4-manjaro-xstate.patch
         grsec_arch.patch
+        4.4-to-4.10-arch-get_user_pages-page_cache_release.patch
         4.7-arch-cpu_has_pge-v2.patch
-        4.9-manjaro.patch
-        4.10-manjaro.patch
+        4.10-arch-sling00-virtual_address-acpi_get_table_with_size-clts.patch
         4.11-npfeiler-signal_vmf.patch
         4.12-npfeiler-PUD_OFFSET.patch
         4.12-npfeiler-movsl_mask.patch
@@ -53,30 +52,46 @@ sha256sums=('3acff4f15946394112311e32e9db723546ec4c4da89c1f6c4f420060c507c150'
             'bf9cfd7252b3a33c50087233f7270180c0f59837bcc9a82482a0367c995c89e6'
             '33b87af3b1b5ab53b32bf972949db1e845beebe1e3d7effc06d11cf8c57f3768'
             '2881026d607f242efc4569bd39d647eae4f2e402da06de5b90476a57c349777c'
-            'd4fdd09b5897eccaccaaa95a3b5a8846ccd7c6f63b3e63659a0fc0f7f3cf661b'
             'cae7603b0b4dfb6594a7d2c7de83f7e37dd2567486a1aced5870b4611a09f422'
             '411c7aea2929cc9bb776cb1ba1df57e1d0f75ee6c84766a7fb791cb6f82446d2'
             'd3695c90d14de5a52a7f4c878ec161a0282ae169c59bbf953950aad7bfb59fdc'
+            '2b83463a47e5a677352f62122fa6655f49c6b1e94b16b9d37b7476ecab2bd20d'
             '39a09293916c876681591dbf20ee09c2971a016081f8aacb90f40227b13d5677'
-            'f846b24a56179abbae694f3f3379dc4e2883e13719d23e9c9125f353e9babfe8'
-            'fe6cd988c1492c350fd87f6885e5b01ea1ee20a88bbf8830d1727deaa021b3c4'
+            'fbba904ed4f69578177f2a5d3e33d1d78069efa1c483f0c2c8b77e49e57cae88'
             '50cf50dced85d267c3a9df997219f75bef1fc19755041f83931eddafd713051b'
             '6c54da21862f11747449d9d4de3fdec1047ca9c1b7a8bc3e1d4b66098fa18ba0'
             'f613e1bc2de3c558e9c808b52f48a6803a778673a9ac009c31cd0cf3c142e5a9'
             '57db04fb9d6f4f5a434ff58c225f882531f74e3d17bc6c9c2defb075b0fb3496'
             'b3b1ccb42829e39a829d71cad2caf4628b83cc22cb18595408c35405f0e5ab6f'
             '1fa9c117cd9aaf32aa230bc0ccc9204f8efd05e3681bf43ed8eabb6e19322f45'
+
             '4f7530540f6e1ea032746e94bd164160abdf93c15509bfb8bdbecd23bcea5c47')
 
 prepare() {
-	#cd ${srcdir}/fglrx-$_pkgver
 	/bin/sh ./fglrx-15.302.2301/amd-driver-installer-15.302.2301-x86.x86_64.run --extract archive_files
-	#/bin/sh ./amd-catalyst-${_pkgver}-linux-x86.x86_64.run --extract archive_files
 
-	# page_cache_release() -> put_page(); 09cbfeaf1a5a67bfb3201e0c83c810cecb2efa5a
-	# get_user_pages() to not pass tsk/mm; d4edcf0d56958db0aca0196314ca38a5e730ea92
-	sed -i 's|page_cache_release|put_page|g' "${srcdir}/archive_files/common/lib/modules/fglrx/build_mod/firegl_public.c"
-	sed -i 's|get_user_pages(current, current->mm, |get_user_pages(|g'  "${srcdir}/archive_files/common/lib/modules/fglrx/build_mod/firegl_public.c"
+	cd "${srcdir}/archive_files"
+
+	## makefile patch to choose arch_compat_alloc_user_space or older compat_alloc_user_space
+	## works only in combination with ati_make.sh script
+        patch -Np1 -i  ${srcdir}/makefile_compat.patch
+        patch -Np1 -i  ${srcdir}/lano1106_fglrx_intel_iommu.patch
+        patch -Np1 -i  ${srcdir}/lano1106_kcl_agp_13_4.patch
+        patch -Np1 -i  ${srcdir}/fglrx_gpl_symbol.patch
+        patch -Np1 -i  ${srcdir}/4.3-kolasa-seq_printf.patch
+        patch -Np1 -i  ${srcdir}/4.3-gentoo-mtrr.patch
+        test "${CARCH}" = "i686" && patch -Np1 -i  ${srcdir}/crimson_i686_xg.patch
+        patch -Np1 -i  ${srcdir}/4.4-manjaro-xstate.patch
+        patch -Np1 -i  ${srcdir}/grsec_arch.patch
+        patch -Np1 -i  ${srcdir}/4.4-to-4.10-arch-get_user_pages-page_cache_release.patch
+        patch -Np1 -i  ${srcdir}/4.7-arch-cpu_has_pge-v2.patch
+        patch -Np1 -i  ${srcdir}/4.10-arch-sling00-virtual_address-acpi_get_table_with_size-clts.patch
+        patch -Np1 -i  ${srcdir}/4.11-npfeiler-signal_vmf.patch
+        patch -Np1 -i  ${srcdir}/4.12-npfeiler-PUD_OFFSET.patch
+        patch -Np1 -i  ${srcdir}/4.12-npfeiler-movsl_mask.patch
+        patch -Np1 -i  ${srcdir}/4.13-npfeiler-wait_queue_t.patch
+        patch -Np1 -i  ${srcdir}/4.14-npfeiler-task_struct-mm_segment_t.patch
+        patch -Np1 -i  ${srcdir}/4.16-manjaro.patch
 }
 
 build() {
@@ -95,29 +110,6 @@ build() {
 		BUILDARCH=i386
 		_archdir=x86
 	fi
-
-	cd "${srcdir}/archive_files"
-
-	## makefile patch to choose arch_compat_alloc_user_space or older compat_alloc_user_space
-	## works only in combination with ati_make.sh script
-        patch -Np1 -i  ${srcdir}/makefile_compat.patch
-        patch -Np1 -i  ${srcdir}/lano1106_fglrx_intel_iommu.patch
-        patch -Np1 -i  ${srcdir}/lano1106_kcl_agp_13_4.patch
-        patch -Np1 -i  ${srcdir}/4.3-kolasa-seq_printf.patch
-        patch -Np1 -i  ${srcdir}/4.3-gentoo-mtrr.patch
-        patch -Np1 -i  ${srcdir}/fglrx_gpl_symbol.patch
-        test "${CARCH}" = "i686" && patch -Np1 -i  ${srcdir}/crimson_i686_xg.patch
-        patch -Np1 -i  ${srcdir}/4.4-manjaro-xstate.patch
-        patch -Np1 -i  ${srcdir}/grsec_arch.patch
-        patch -Np1 -i  ${srcdir}/4.7-arch-cpu_has_pge-v2.patch
-        patch -Np2 -i  ${srcdir}/4.9-manjaro.patch
-        patch -Np2 -i  ${srcdir}/4.10-manjaro.patch
-        patch -Np1 -i  ${srcdir}/4.11-npfeiler-signal_vmf.patch
-        patch -Np1 -i  ${srcdir}/4.12-npfeiler-PUD_OFFSET.patch
-        patch -Np1 -i  ${srcdir}/4.12-npfeiler-movsl_mask.patch
-        patch -Np1 -i  ${srcdir}/4.13-npfeiler-wait_queue_t.patch
-        patch -Np1 -i  ${srcdir}/4.14-npfeiler-task_struct-mm_segment_t.patch
-        patch -Np1 -i  ${srcdir}/4.16-manjaro.patch
 
         cd "${srcdir}/archive_files/common/lib/modules/fglrx/build_mod"
 	cp "${srcdir}/archive_files/arch/${_archdir}/lib/modules/fglrx/build_mod/libfglrx_ip.a" .
