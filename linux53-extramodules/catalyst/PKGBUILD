@@ -1,8 +1,8 @@
 # Maintainer: Philip Müller <philm[at]manjaro[dog]org>
 # Maintainer: Roland Singer <roland[at]manjaro[dog]org>
 
-_linuxprefix=linux52
-_extramodules=extramodules-5.2-MANJARO
+_linuxprefix=linux53
+_extramodules=extramodules-5.3-MANJARO
 pkgname=$_linuxprefix-catalyst
 _pkgname=catalyst
 pkgver=15.302.2301
@@ -43,6 +43,7 @@ source=(https://drivers.amd.com/drivers/firepro/15.302.2301-linux-retail_end_use
         4.20-npfeiler-libfglrx_ip-nodkms.patch
         4.21-manjaro-npfeiler.patch
         5.1-npfeiler.patch
+        5.3-smp_call_function.patch
 	LICENSE.TXT)
 
 url_ref="https://support.amd.com/en-us/download/desktop?os=Linux+x86"
@@ -72,6 +73,7 @@ sha256sums=('3acff4f15946394112311e32e9db723546ec4c4da89c1f6c4f420060c507c150'
             'ce90f034e1630c4581bbc7186e8ca41c3a0b7e129510137257f0c02ffa077e03'
             'a139162276b92443651e890421887898342acf754e2a3e7aad503042474aaf17'
             '80166cbd974045d4764b48a09748974d74bedfaa7fc547c404daa48132c7efc6'
+            '06ac4b9f83f2d5c137e674585d143e0aa528ed9676d38449ae9077db2c2d5be6'
             '4f7530540f6e1ea032746e94bd164160abdf93c15509bfb8bdbecd23bcea5c47')
 
 prepare() {
@@ -102,6 +104,7 @@ prepare() {
         patch -Np1 -i  ${srcdir}/4.20-npfeiler-libfglrx_ip-nodkms.patch
         patch -Np1 -i  ${srcdir}/4.21-manjaro-npfeiler.patch
         patch -Np1 -i  ${srcdir}/5.1-npfeiler.patch
+        patch -Np1 -i  ${srcdir}/5.3-smp_call_function.patch
 }
 
 build() {

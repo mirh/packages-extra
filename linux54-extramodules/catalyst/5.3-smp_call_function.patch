@@ -1,0 +1,13 @@
+--- archive_files/common/lib/modules/fglrx/build_mod/firegl_public.c
++++ archive_files/common/lib/modules/fglrx/build_mod/firegl_public.c
+@@ -3354,7 +3354,9 @@ static void deferred_flush(void* context
+  * \param nonatomic Currently unused.
+  * \param wait If true, wait (atomically) until function has completed on other CPUs.
+  */
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,27)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,29)
++#define KCL_SmpCallFunction(func, info, nonatomic, wait) 0
++#elif LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,27)
+ #define KCL_SmpCallFunction(func, info, nonatomic, wait) smp_call_function(func, info, wait)
+ #else
+ #define KCL_SmpCallFunction(func, info, nonatomic, wait) smp_call_function(func, info, nonatomic, wait)

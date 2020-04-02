@@ -1,0 +1,19 @@
+--- archive_files/common/lib/modules/fglrx/build_mod/2.6.x/Makefile
++++ archive_files/common/lib/modules/fglrx/build_mod/2.6.x/Makefile
+@@ -27,7 +27,6 @@
+ LIBIP_PREFIX	?= ..
+ 
+ obj-m           += fglrx.o
+-fglrx-libs      += libfglrx_ip.a
+ 
+ fglrx-c-objs    += firegl_public.o      \
+                    kcl_acpi.o           \
+@@ -41,7 +40,7 @@ fglrx-c-objs    += firegl_public.o      \
+                    kcl.o                \
+                    kcl_wait.o
+ 
+-fglrx-objs      += $(fglrx-c-objs) $(fglrx-libs)
++fglrx-objs      += $(fglrx-c-objs)
+ 
+ fglrx-hdrs      += firegl_public.h      \
+                    fglrxko_pci_ids.h    \
