@@ -9,7 +9,7 @@ set -e
 rm -rf ~/packages/*.pkg.tar.xz
 mkdir -p ~/packages
 cd "${_ROOT}"/xorg119/xorg-server
-makepkg -s
+makepkg -Cfs
 cd ../../nvidia304-server
 SRCDEST=../xorg119/xorg-server PKGDEST=~/packages makepkg -sf
 cd ../nvidia304-video
@@ -24,8 +24,8 @@ cd ..
 # rm -Rf */*nvidia*304*/{src,pkg}
 for k in 316 318 44 49 414 419 54; do
   if (pacman -Q linux$k-headers > /dev/null 2>&1); then
-    cd "${_ROOT}"/linux$k-extramodules/nvidia-304xx
-    SRCDEST="${_ROOT}"/nvidia-304xx-utils PKGDEST=~/packages makepkg -dfC
+    cd "${_ROOT}"/linux$k-extramodules
+    SRCDEST="${_ROOT}"/nvidia-304xx-utils PKGDEST=~/packages makepkg -fC
     _KERN=${_KERN//linux$k/}
     #_PKG+=`realpath linux*nvidia*pkg.tar*`
   else
