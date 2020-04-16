@@ -9,3 +9,5 @@ But opening notepads is annoying, so here you are with a comfy command to do thi
 
 Now, just [download](https://github.com/mirh/packages-legacy/archive/master.zip) this repository and follow the instructions inside your folder of interest. 
 Please read them, it's not nice to reboot to a black screen.
+
+Only catalyst and nvidia304 are road tested for the moment.

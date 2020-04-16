@@ -26,9 +26,9 @@ cd ../lib32-catalyst-utils
 SRCDEST=../catalyst-utils PKGDEST=~/packages makepkg -fC
 cd ..
 
-for k in 316 318 44 49 414 419 52; do
+for k in 316 318 44 49 414 419 53; do
   if (pacman -Q linux$k-headers > /dev/null 2>&1); then
-    cd "${_ROOT}"/linux$k-extramodules/catalyst
+    cd "${_ROOT}"/linux$k-extramodules
     SRCDEST="${_ROOT}"/catalyst-utils PKGDEST=~/packages makepkg -fC
     _KERN=${_KERN//linux$k/}
   else

@@ -13,7 +13,7 @@ makedepends=('pixman' 'libx11' 'mesa' 'mesa-libgl' 'xorgproto' 'xtrans' 'libxkbf
              'libxtst' 'libxres' 'xorg-xkbcomp' 'xorg-util-macros' 'xorg-font-util'
              'libgcrypt' 'libepoxy' 'xcb-util' 'xcb-util-image' 'xcb-util-renderutil'
              'xcb-util-wm' 'xcb-util-keysyms' 'libxshmfence' 'libunwind')
-source=(${url}/releases/individual/xserver/${pkgbase}-${pkgver}.tar.bz2{,.sig}
+source=(${url}/releases/individual/xserver/${pkgbase}-${pkgver}.tar.bz2
         nvidia-drm-outputclass.conf
         xvfb-run
         xvfb-run.1
@@ -22,12 +22,10 @@ source=(${url}/releases/individual/xserver/${pkgbase}-${pkgver}.tar.bz2{,.sig}
         0001-systemd-logind-do-not-rely-on-directed-signals.patch
         0001-dix-Work-around-non-premultiplied-ARGB-cursor-data.patch
         0001-call-eglBindAPI-after-eglInitialize.patch
-        nvidia-add-modulepath-support.patch)
-validpgpkeys=('7B27A3F1A6E18CD9588B4AE8310180050905E40C'
-              'C383B778255613DFDB409D91DB221A6900000011'
-              'DD38563A8A8224537D1F90E45B8A2D50A0ECD0D3')
+        nvidia-add-modulepath-support.patch
+        libglvnd.patch
+        glibc.patch)
 sha256sums=('0c4b45c116a812a996eb432d8508cf26c2ec8c3916ff2a50781796882f8d6457'
-            'SKIP'
             'af1c3d2ea5de7f6a6b5f7c60951a189a4749d1495e5462f3157ae7ac8fe1dc56'
             'ff0156309470fc1d378fd2e104338020a884295e285972cc88e250e031cc35b9'
             '2460adccd3362fefd4cdc5f1c70f332d7b578091fb9167bf88b5f91265bbd776'
@@ -37,8 +35,8 @@ sha256sums=('0c4b45c116a812a996eb432d8508cf26c2ec8c3916ff2a50781796882f8d6457'
             'ecb0b1f73342e8c3de1563efcc812ac0235e2994d0343b392c1f51920510aa18'
             '45fdc2a1241d458756c41a93c01846e04cc75f3c75f81f48b61533d08280918d'
             '54f70d98a53305fc6255fb3cc162b03f37d6952cbba92efec96e0992da896710'
-            '76c697aea92cbb85bd0ae2dd420d8f552b7506a3f50d2604bbf690704b254662'
-            'eda422cf4589df936f45112a0e2bc4e4f89e2dc46c717ccb3b1ed10a467e5065')
+            '981107a66e668ca8fb48a2915621b15711e85528c41fe0dc13c88ecf0ecafec8'
+            '01e8e461798b40e7bf54617fa2f8c9083601f11e87a85482b8e220a7e126f751')
 
 prepare() {
   cd "${pkgbase}-${pkgver}"
