@@ -31,6 +31,7 @@ source=(https://drivers.amd.com/drivers/firepro/15.302.2301-linux-retail_end_use
         4.4-manjaro-xstate.patch
         grsec_arch.patch
         4.9-manjaro-back.patch
+        15.9-preempt.patch
         LICENSE.TXT)
 
 url_ref="http://support.amd.com/en-us/download/desktop?os=Linux+x86"
@@ -48,6 +49,7 @@ sha256sums=('3acff4f15946394112311e32e9db723546ec4c4da89c1f6c4f420060c507c150'
             '411c7aea2929cc9bb776cb1ba1df57e1d0f75ee6c84766a7fb791cb6f82446d2'
             'd3695c90d14de5a52a7f4c878ec161a0282ae169c59bbf953950aad7bfb59fdc'
             '1d5c269e8c2fa8cdc080f6bfd5afae56d28c7c6859bd3fce2665e7ec5c05df28'
+            '4e2628a54e80ae9d1e325504dd8626943a6d3e2e4da8a12f0fc39edf284e7466'
             '4f7530540f6e1ea032746e94bd164160abdf93c15509bfb8bdbecd23bcea5c47')
 
 prepare() {
@@ -67,6 +69,7 @@ prepare() {
         patch -Np1 -i  ${srcdir}/4.4-manjaro-xstate.patch
         patch -Np1 -i  ${srcdir}/grsec_arch.patch
         patch -Np2 -i  ${srcdir}/4.9-manjaro-back.patch
+        patch -Np1 -i  ${srcdir}/15.9-preempt.patch
 }
 
 build() {

@@ -1,0 +1,20 @@
+--- archive_files/common/lib/modules/fglrx/build_mod/firegl_public.c	2018-12-29 11:59:21.056985641 +0100
++++ archive_filesb/common/lib/modules/fglrx/build_mod/firegl_public.c	2018-12-29 12:30:07.538693938 +0100
+@@ -6623,7 +6623,7 @@ static int KCL_fpu_save_init(struct task
+ void ATI_API_CALL KCL_fpu_begin(void)
+ {
+ #ifdef CONFIG_X86_64
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(4,2,0)
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4,2,0) || LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,120)
+     kernel_fpu_begin();
+ #else
+     preempt_disable();
+@@ -6673,7 +6673,7 @@ void ATI_API_CALL KCL_fpu_begin(void)
+  */
+ void ATI_API_CALL KCL_fpu_end(void)
+ {
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(4,2,0)
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4,2,0) || LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,120)
+     kernel_fpu_end();
+ #else
+     __kernel_fpu_end();

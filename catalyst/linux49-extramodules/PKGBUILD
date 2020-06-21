@@ -32,6 +32,7 @@ source=(https://drivers.amd.com/drivers/firepro/15.302.2301-linux-retail_end_use
         grsec_arch.patch
         4.7-arch-cpu_has_pge-v2.patch
         4.4-to-4.10-arch-get_user_pages-page_cache_release.patch
+        15.9-preempt.patch
 	LICENSE.TXT)
 
 url_ref="http://support.amd.com/en-us/download/desktop?os=Linux+x86"
@@ -50,6 +51,7 @@ sha256sums=('3acff4f15946394112311e32e9db723546ec4c4da89c1f6c4f420060c507c150'
             'd3695c90d14de5a52a7f4c878ec161a0282ae169c59bbf953950aad7bfb59fdc'
             '39a09293916c876681591dbf20ee09c2971a016081f8aacb90f40227b13d5677'
             '2b83463a47e5a677352f62122fa6655f49c6b1e94b16b9d37b7476ecab2bd20d'
+            '4e2628a54e80ae9d1e325504dd8626943a6d3e2e4da8a12f0fc39edf284e7466'
             '4f7530540f6e1ea032746e94bd164160abdf93c15509bfb8bdbecd23bcea5c47')
 
 prepare() {
@@ -69,6 +71,7 @@ prepare() {
         patch -Np1 -i  ${srcdir}/grsec_arch.patch
         patch -Np1 -i  ${srcdir}/4.4-to-4.10-arch-get_user_pages-page_cache_release.patch
         patch -Np1 -i  ${srcdir}/4.7-arch-cpu_has_pge-v2.patch
+        patch -Np1 -i  ${srcdir}/15.9-preempt.patch
 }
 
 build() {

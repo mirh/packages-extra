@@ -38,8 +38,10 @@ source=(https://drivers.amd.com/drivers/firepro/15.302.2301-linux-retail_end_use
         4.12-npfeiler-movsl_mask.patch
         4.13-npfeiler-wait_queue_t.patch
         4.14-npfeiler-task_struct-mm_segment_t.patch
-	4.16-manjaro.patch
-	LICENSE.TXT)
+        4.16-manjaro.patch
+        4.1914-manjaro.patch
+        15.9-preempt.patch
+        LICENSE.TXT)
 
 url_ref="http://support.amd.com/en-us/download/desktop?os=Linux+x86"
 DLAGENTS="https::/usr/bin/curl --referer ${url_ref} -o %o %u"
@@ -64,7 +66,8 @@ sha256sums=('3acff4f15946394112311e32e9db723546ec4c4da89c1f6c4f420060c507c150'
             '57db04fb9d6f4f5a434ff58c225f882531f74e3d17bc6c9c2defb075b0fb3496'
             'b3b1ccb42829e39a829d71cad2caf4628b83cc22cb18595408c35405f0e5ab6f'
             '1fa9c117cd9aaf32aa230bc0ccc9204f8efd05e3681bf43ed8eabb6e19322f45'
-
+            'f5b5c9bd96e7ca834d4bc3c2d53f5583468f2f909d598bec6e94da5ecabb159a'
+            '4e2628a54e80ae9d1e325504dd8626943a6d3e2e4da8a12f0fc39edf284e7466'
             '4f7530540f6e1ea032746e94bd164160abdf93c15509bfb8bdbecd23bcea5c47')
 
 prepare() {
@@ -92,6 +95,8 @@ prepare() {
         patch -Np1 -i  ${srcdir}/4.13-npfeiler-wait_queue_t.patch
         patch -Np1 -i  ${srcdir}/4.14-npfeiler-task_struct-mm_segment_t.patch
         patch -Np1 -i  ${srcdir}/4.16-manjaro.patch
+        patch -Np1 -i  ${srcdir}/4.1914-manjaro.patch
+        patch -Np1 -i  ${srcdir}/15.9-preempt.patch
 }
 
 build() {

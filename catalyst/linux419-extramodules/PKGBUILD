@@ -41,6 +41,7 @@ source=(https://drivers.amd.com/drivers/firepro/15.302.2301-linux-retail_end_use
         4.14.21_4.15.5-npfeiler-flush_tlb_one_kernel.patch
         4.17-npfeiler-pci_get_domain_bus_and_slot.patch
         4.19-manjaro.patch
+        15.9-preempt.patch
         LICENSE.TXT)
 
 url_ref="https://support.amd.com/en-us/download/desktop?os=Linux+x86"
@@ -68,6 +69,7 @@ sha256sums=('3acff4f15946394112311e32e9db723546ec4c4da89c1f6c4f420060c507c150'
             '9e86af669533a72c1507e7dbbf7e07af2a24f8fb6decb6e07a441f3d2d705a58'
             '7d3fd4aa044c8bf047246021b68d6bd89798fd44f0eedc481c7a335f57425434'
             '89959f5e32ebb93011726ded55a13c910343010824afabccabc3da6c5b8840a6'
+            '4e2628a54e80ae9d1e325504dd8626943a6d3e2e4da8a12f0fc39edf284e7466'
             '4f7530540f6e1ea032746e94bd164160abdf93c15509bfb8bdbecd23bcea5c47')
 
 prepare() {
@@ -97,6 +99,7 @@ prepare() {
         patch -Np1 -i  ${srcdir}/4.14.21_4.15.5-npfeiler-flush_tlb_one_kernel.patch
         patch -Np1 -i  ${srcdir}/4.17-npfeiler-pci_get_domain_bus_and_slot.patch
         patch -Np1 -i  ${srcdir}/4.19-manjaro.patch
+        patch -Np1 -i  ${srcdir}/15.9-preempt.patch
 }
 
 build() {
