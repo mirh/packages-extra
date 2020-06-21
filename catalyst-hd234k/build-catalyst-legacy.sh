@@ -8,7 +8,6 @@ set -e
 
 rm -rf ~/packages/*.pkg.tar.xz
 mkdir -p ~/packages
-# gcc 10 has this broken
 cd "${_ROOT}"/xorg-server1.12
 PKGDEST=~/packages makepkg -Cfs
 if ! pacman -Q xorg-server1.12-devel > /dev/null 2>&1; then
