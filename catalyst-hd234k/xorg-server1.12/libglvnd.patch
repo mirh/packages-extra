@@ -1,0 +1,11 @@
+diff --git a/configure.ac b/configure.ac
+index 2f48b9075..b380bef12 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -802,7 +802,7 @@ LIBDRI="dri >= 7.8.0"
+ LIBDRM="libdrm >= 2.3.0"
+-LIBGL="gl >= 7.1.0"
++LIBGL="gl >= 1.2"
+ LIBXEXT="xext >= 1.0.99.4"
+ LIBXFONT="xfont >= 1.4.2"
+ LIBXI="xi >= 1.2.99.1"

@@ -1,0 +1,45 @@
+err() {
+    ALL_OFF="\e[1;0m"
+    BOLD="\e[1;1m"
+    RED="${BOLD}\e[1;31m"
+	local mesg=$1; shift
+	printf "${RED}==>${ALL_OFF}${BOLD} ${mesg}${ALL_OFF}\n" "$@" >&2
+}
+
+msg() {
+    ALL_OFF="\e[1;0m"
+    BOLD="\e[1;1m"
+    GREEN="${BOLD}\e[1;32m"
+	local mesg=$1; shift
+	printf "${GREEN}==>${ALL_OFF}${BOLD} ${mesg}${ALL_OFF}\n" "$@" >&2
+}
+
+bug_whisper(){
+    echo -e '\E[37;44m'"\033[1m---------------- I/O BUG ---------------------------------------\033[0m"
+    echo "There's a bug in fglrx found by lano1106 which generates"
+    echo "great amount of unneeded I/O operations"
+    echo ""
+    echo "To activate workaround enable systemd service:"
+    echo "systemctl enable temp-links-catalyst"
+    echo "systemctl start temp-links-catalyst"
+    echo ""
+    echo "More infos:"
+    echo "https://bbs.archlinux.org/viewtopic.php?pid=1279977#p1279977"
+    echo "https://bbs.archlinux.org/viewtopic.php?pid=1280193#p1280193"
+    echo -e '\E[37;44m'"\033[1m----------------------------------------------------------------\033[0m"
+}
+
+post_install() {
+	mhwd-gpu --check
+	bug_whisper
+}
+
+
+post_upgrade() {
+	post_install
+}
+
+
+post_remove() {
+	mhwd-gpu --check
+}

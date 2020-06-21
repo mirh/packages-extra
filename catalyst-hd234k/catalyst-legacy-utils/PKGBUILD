@@ -1,0 +1,218 @@
+# Contributor: Fabian Bornschein <plusfabi[at]gmail[dog]com>
+# Contributor: Vi0L0 <vi0l093@gmail.com>
+# Maintainer: Philip Müller <philm[at]manjaro[dog]org>
+# Maintainer: Roland Singer <roland[at]manjaro[dog]org>
+
+pkgbase=catalyst-legacy-utils
+pkgname=('catalyst-legacy-utils' 'mhwd-catalyst-legacy')
+pkgver=13.1
+pkgrel=1
+_execlineorig="Exec=amdxdg-su -c amdcccle"
+_execlinenew="Exec=xdg-su amdcccle"
+pkgdesc="AMD/ATI Catalyst drivers utilities and libraries."
+arch=('i686' 'x86_64')
+url="http://www.amd.com"
+license=('custom')
+source=("https://drivers.amd.com/drivers/legacy/amd-driver-installer-catalyst-13.1-legacy-linux-x86.x86_64.zip"
+    catalyst.sh
+    atieventsd.sh
+    atieventsd.service
+    ati-powermode.sh
+    arch-fglrx-authatieventsd_new.patch
+    mhwd-catalyst
+    fglrx-outputclass.conf
+    MHWDCONFIG)
+
+url_ref="http://support.amd.com/en-us/download/desktop?os=Linux+x86"
+DLAGENTS="https::/usr/bin/curl --referer ${url_ref} -o %o %u"
+
+sha256sums=('3a992fb7564dba17a696217dc32043dabc21743c82116a6657817ee8a3a1d55f'
+            'd5583bfb5977f73b4ca65533030f490350daca9e0ed10aefe517ffb70817531e'
+            '9b347c3f518ddf12bb08a3cf09afcc3096e5dd4488e7ca3445df97b392985e8b'
+            'f52d764386de6ca6deba05a5edabe52a6c7d64ee6e603f7c8047e0699ba67c0d'
+            'b90fc5a8507c3fa48da0c334ab0680c36b01500cbc54e1a55b5e1546d116f9e0'
+            'e9db1f09c6ebbe2024bcbb40a86482d4fdbcf227a6f1d58385101efe46dab9e5'
+            '4f36dd7b3bf2beec22af68f1aedf96cbdb9fa7b0586af71bac5c8b1f4a952358'
+            '00066682bb985bdd957a16f67404a1d4653fa2c85f4e7b8b6a924e06ef135c38'
+            '9fa02e177c114cab8b23f8563d137d4526bb982733cd617d306435a973fdbf79')
+
+prepare() {
+	/bin/sh ./amd-driver-installer-catalyst-13.1-legacy-linux-x86.x86_64.run --extract archive_files
+
+}
+
+package_catalyst-legacy-utils() {
+	pkgdesc="AMD Catalyst drivers utilities and libraries."
+	depends=('catalyst-legacy=13.1' 'X-ABI-VIDEODRV_VERSION>=4.1' 'X-ABI-VIDEODRV_VERSION<=12' 
+		'libxrandr' 'libsm' 'fontconfig' 'libxcursor' 'libxi' 'gcc-libs' 'libxinerama' 'mesa' 'xdg-su' 'mhwd')
+	optdepends=('qt4: to run ATi Catalyst Control Center (amdcccle)'
+		    'libxxf86vm: to run ATi Catalyst Control Center (amdcccle)'
+		    'acpid: acpi event support  / atieventsd'
+		    'opencl-catalyst: OpenCL implemention for AMD Catalyst')
+	conflicts=('catalyst' 'catalyst-utils' 'catalyst-13.4' 'catalyst-13.4-utils' 'xvba-video')
+	install="${pkgname}.install"
+
+	cd archive_files
+
+    ## Install userspace tools and libraries
+    # Create directories
+      install -m755 -d "${pkgdir}/etc/ati"
+      install -m755 -d "${pkgdir}/etc/rc.d"
+      install -m755 -d "${pkgdir}/etc/profile.d"
+      install -m755 -d "${pkgdir}/etc/acpi/events"
+      install -m755 -d "${pkgdir}/etc/security/console.apps"
+
+      install -m755 -d "${pkgdir}/usr/lib/xorg/modules/dri"
+      install -m755 -d "${pkgdir}/usr/lib/xorg/modules/drivers"
+      install -m755 -d "${pkgdir}/usr/lib/xorg/modules/linux"
+      install -m755 -d "${pkgdir}/usr/lib/dri"
+      install -m755 -d "${pkgdir}/usr/lib/fglrx"
+      install -m755 -d "${pkgdir}/usr/lib/systemd/system"
+
+      install -m755 -d "${pkgdir}/usr/bin"
+
+      install -m755 -d "${pkgdir}/usr/include/GL"
+
+      install -m755 -d "${pkgdir}/usr/share/applications"
+      install -m755 -d "${pkgdir}/usr/share/ati/amdcccle"
+      install -m755 -d "${pkgdir}/usr/share/licenses/${pkgname}"
+      install -m755 -d "${pkgdir}/usr/share/man/man8"
+      install -m755 -d "${pkgdir}/usr/share/pixmaps"
+
+    # X.org driver
+      if [ "${CARCH}" = "i686" ]; then
+	cd "${srcdir}/archive_files/xpic/usr/X11R6/lib/modules"
+      elif [ "${CARCH}" = "x86_64" ]; then
+	cd "${srcdir}/archive_files/xpic_64a/usr/X11R6/lib64/modules"
+      fi
+
+      install -m755 *.so "${pkgdir}/usr/lib/xorg/modules"
+      install -m755 drivers/*.so "${pkgdir}/usr/lib/xorg/modules/drivers"
+      install -m755 linux/*.so "${pkgdir}/usr/lib/xorg/modules/linux"
+
+    # GLX extension module for X
+    install -D -m755 extensions/fglrx/fglrx-libglx.so "${pkgdir}/usr/lib/fglrx/xorg/libglx.so.1"
+    ln -s "libglx.so.1"  "${pkgdir}/usr/lib/fglrx/xorg/libglx.so"
+
+    # We have to provide symlink to mesa (see https://bugzilla.redhat.com/show_bug.cgi?id=1413579#c57)
+    #ln -s "/usr/lib/libGLX_mesa.so.0.0.0" "${pkgdir}/usr/lib/libGLX_indirect.so.0"
+    #ln -s "fglrx/xorg/libglx.so.1" "${pkgdir}/usr/lib/libGLX_indirect.so.0"
+
+    # TODO: could it be I'm stupid and I just added needless symlinks in a libglvnd world?
+    ln -s /usr/lib/libEGL.so.1.0.0 "${pkgdir}/usr/lib/fglrx/libEGL.so.1.0.0"
+    ln -s libEGL.so.1.0.0      "${pkgdir}/usr/lib/fglrx/libEGL.so.1"
+    ln -s libEGL.so.1.0.0      "${pkgdir}/usr/lib/fglrx/libEGL.so"
+
+    ln -s /usr/lib/libGLESv1_CM.so.1.0.0 "${pkgdir}/usr/lib/fglrx/libGLESv1_CM.so.1.0.0"
+    ln -s libGLESv1_CM.so.1.0.0      "${pkgdir}/usr/lib/fglrx/libGLESv1_CM.so.1"
+    ln -s libGLESv1_CM.so.1.0.0      "${pkgdir}/usr/lib/fglrx/libGLESv1_CM.so"
+
+    ln -s /usr/lib/libGLESv2.so.2.0.0 "${pkgdir}/usr/lib/fglrx/libGLESv2.so.2.0.0"
+    ln -s libGLESv2.so.2.0.0      "${pkgdir}/usr/lib/fglrx/libGLESv2.so.2"
+    ln -s libGLESv2.so.2.0.0      "${pkgdir}/usr/lib/fglrx/libGLESv2.so"
+
+    # Controlcenter / libraries
+      if [ "${CARCH}" = "i686" ]; then
+	cd "${srcdir}/archive_files/arch/x86/usr"
+	_lib=lib
+      elif [ "${CARCH}" = "x86_64" ]; then
+	cd "${srcdir}/archive_files/arch/x86_64/usr"
+	_lib=lib64
+      fi
+
+	# OpenGL library
+	install -D -m755 X11R6/${_lib}/fglrx/fglrx-libGL.so.1.2 "${pkgdir}/usr/lib/fglrx/libGL.so.1.2"
+	ln -s "libGL.so.1.2" "${pkgdir}/usr/lib/fglrx/libGL.so.1"
+	ln -s "libGL.so.1.2" "${pkgdir}/usr/lib/fglrx/libGL.so"
+
+	install -m755 X11R6/bin/* "${pkgdir}/usr/bin"
+	install -m755 sbin/* "${pkgdir}/usr/bin"
+	install -m755 X11R6/${_lib}/libAMDXvBA.so.1.0 "${pkgdir}/usr/lib"
+	ln -snf libAMDXvBA.so.1.0 "${pkgdir}/usr/lib/libAMDXvBA.so.1"
+	ln -snf libAMDXvBA.so.1.0 "${pkgdir}/usr/lib/libAMDXvBA.so"
+	install -m755 X11R6/${_lib}/libatiadlxx.so "${pkgdir}/usr/lib"
+	install -m755 X11R6/${_lib}/libfglrx_dm.so.1.0 "${pkgdir}/usr/lib"
+	install -m755 X11R6/${_lib}/libXvBAW.so.1.0 "${pkgdir}/usr/lib"
+	ln -snf libXvBAW.so.1.0 "${pkgdir}/usr/lib/libXvBAW.so.1"
+	ln -snf libXvBAW.so.1.0 "${pkgdir}/usr/lib/libXvBAW.so"
+	install -m644 X11R6/${_lib}/*.a "${pkgdir}/usr/lib"
+	install -m644 X11R6/${_lib}/*.cap "${pkgdir}/usr/lib"
+	install -m755 X11R6/${_lib}/modules/dri/*.so "${pkgdir}/usr/lib/xorg/modules/dri"
+	install -m755 ${_lib}/*.so* ${pkgdir}/usr/lib
+
+    ## QT libs (only 2 files) - un-comment 2 lines below if you don't want to install qt package
+#      install -m755 -d "${pkgdir}/usr/share/ati/${_lib}"
+#      install -m755 share/ati/${_lib}/*.so* "${pkgdir}/usr/share/ati/${_lib}"
+
+    # fix AIGLX open error (laptops wake on 4.15+?)
+      install -m755 -d ${pkgdir}/usr/X11R6/${_lib}/modules/dri
+      ln -snf /usr/lib/xorg/modules/dri/fglrx_dri.so "${pkgdir}"/usr/X11R6/${_lib}/modules/dri/fglrx_dri.so
+
+      ln -snf /usr/lib/xorg/modules/dri/fglrx_dri.so "${pkgdir}/usr/lib/dri/fglrx_dri.so"
+      ln -snf libfglrx_dm.so.1.0 "${pkgdir}/usr/lib/libfglrx_dm.so.1"
+      ln -snf libfglrx_dm.so.1.0 "${pkgdir}/usr/lib/libfglrx_dm.so"
+      ln -snf libatiuki.so.1.0 "${pkgdir}/usr/lib/libatiuki.so.1"
+      ln -snf libatiuki.so.1.0 "${pkgdir}/usr/lib/libatiuki.so"
+
+      cd "${srcdir}/archive_files/common"
+      patch -Np2 -i "${srcdir}/arch-fglrx-authatieventsd_new.patch"
+      install -m644 etc/ati/* "${pkgdir}/etc/ati"
+      chmod 755 "${pkgdir}/etc/ati/authatieventsd.sh"
+
+      install -m644 etc/security/console.apps/amdcccle-su "${pkgdir}/etc/security/console.apps"
+
+      install -m755 usr/X11R6/bin/* "${pkgdir}/usr/bin"
+      install -m644 usr/include/GL/*.h "${pkgdir}/usr/include/GL"
+      install -m755 usr/sbin/*.sh "${pkgdir}/usr/bin"
+      install -m644 usr/share/ati/amdcccle/* "${pkgdir}/usr/share/ati/amdcccle"
+      install -m644 usr/share/icons/*.xpm "${pkgdir}/usr/share/pixmaps"
+      install -m644 usr/share/man/man8/*.8 "${pkgdir}/usr/share/man/man8"
+      install -m644 usr/share/applications/*.desktop "${pkgdir}/usr/share/applications"
+
+	# ACPI example files
+	#       install -m755 usr/share/doc/fglrx/examples/etc/acpi/*.sh ${pkgdir}/etc/acpi
+	#       sed -i -e "s/usr\/X11R6/usr/g" ${pkgdir}/etc/acpi/ati-powermode.sh
+	install -m644 usr/share/doc/fglrx/examples/etc/acpi/events/* ${pkgdir}/etc/acpi/events
+	# put version modified by aslmaswd - V
+	install -m755 ${srcdir}/ati-powermode.sh ${pkgdir}/etc/acpi
+
+	# Add ATI Events Daemon launcher
+	install -m755 ${srcdir}/atieventsd.sh ${pkgdir}/etc/rc.d/atieventsd
+	install -m644 ${srcdir}/atieventsd.service ${pkgdir}/usr/lib/systemd/system
+
+	# thanks to cerebral, we dont need that damned symlink
+	install -m755 ${srcdir}/catalyst.sh ${pkgdir}/etc/profile.d
+
+    # License
+      install -m644 "${srcdir}/archive_files/LICENSE.TXT" "${pkgdir}/usr/share/licenses/${pkgname}"
+      install -m644 "${srcdir}/archive_files/common/usr/share/doc/amdcccle/ccc_copyrights.txt" \
+	"${pkgdir}/usr/share/licenses/${pkgname}/amdcccle_copyrights.txt"
+
+    # provided in opencl-catalyst and opencl-icd-loader package
+      rm "${pkgdir}"/usr/lib/lib{amdocl*,OpenCL}.so* 
+
+    # Admin CC launcher fix
+      cd "${pkgdir}/usr/share/applications"
+      sed -i "s|${_execlineorig}|${_execlinenew}|g" amdccclesu.desktop
+
+    # distro specific files must be installed in /usr/share/X11/xorg.conf.d
+    install -m755 -d "${pkgdir}/usr/share/X11/xorg.conf.d"
+    install -m644 "${srcdir}/fglrx-outputclass.conf" "${pkgdir}/usr/share/X11/xorg.conf.d/"
+
+    install -dm 755 "${pkgdir}"/etc/ld.so.conf.d
+    echo -e '/usr/lib/fglrx/' > "${pkgdir}"/etc/ld.so.conf.d/00-fglrx.conf
+}
+
+package_mhwd-catalyst-legacy() {
+    pkgdesc="MHWD module-ids for catalyst-legacy $pkgver"
+    arch=('any')
+
+    install -d -m755 "${pkgdir}/var/lib/mhwd/ids/pci/"
+    # Generate mhwd database
+    sh -e "${srcdir}/mhwd-catalyst" \
+    "${srcdir}/archive_files/common/lib/modules/fglrx/build_mod/fglrxko_pci_ids.h" \
+    > "${pkgdir}/var/lib/mhwd/ids/pci/catalyst-legacy.ids"
+
+    # Add back killed off mhwd entry
+    install -D -m755 "${srcdir}"/MHWDCONFIG -t "${pkgdir}/var/lib/mhwd/db/pci/graphic_drivers/catalyst-legacy/"
+}
